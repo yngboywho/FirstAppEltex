@@ -1,11 +1,12 @@
 package com.eltex.firstapp
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 class EventViewModel : ViewModel() {
-    private val _state = MutableStateFlow(
+    var state by mutableStateOf(
         EventUiModel(
             author = "Lydia Westervelt",
             published = "11.05.22 11:21",
@@ -20,12 +21,10 @@ class EventViewModel : ViewModel() {
             participantsByMe = false,
         )
     )
-    val state: StateFlow<EventUiModel> = _state
-
-    var states = _state.value
+        private set
 
     fun like() {
-        states = with(states) {
+        state = with(state) {
             copy(
                 likedByMe = !likedByMe,
                 likes = if (likedByMe) likes - 1 else likes + 1,
@@ -34,7 +33,7 @@ class EventViewModel : ViewModel() {
     }
 
     fun participate() {
-        states = with(states) {
+        state = with(state) {
             copy(
                 participantsByMe = !participantsByMe,
                 participants = if (participantsByMe) participants - 1 else participants + 1,
@@ -43,6 +42,6 @@ class EventViewModel : ViewModel() {
     }
 
     fun share() {
-        throw NotImplementedError("Поделиться не реализовано сейчас")
+        throw NotImplementedError("Поделиться не реализовано")
     }
 }
