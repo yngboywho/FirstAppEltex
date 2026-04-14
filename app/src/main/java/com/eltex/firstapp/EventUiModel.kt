@@ -7,6 +7,7 @@ data class EventUiModel(
     val visit: String = "",
     val content: String = "",
     val author: String = "",
+    val link: String = "",
     val likes: Int = 0,
     val likedByMe: Boolean = false,
     val participants: Int = 0,

@@ -15,6 +15,7 @@ class EventViewModel : ViewModel() {
             content = "Приглашаю провести уютный вечер за увлекательными играми! " +
                     "У нас есть несколько вариантов настолок, " +
                     "подходящих для любой компании.",
+            link = "https://m2.material.io/components/cards",
             likes = 2,
             likedByMe = false,
             participants = 2,

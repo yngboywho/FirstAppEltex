@@ -30,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -86,6 +87,16 @@ fun EventCard(
             Spacer(Modifier.height(12.dp))
 
             Text(modifier = Modifier.padding(top = 16.dp, end = 16.dp), text = event.content)
+
+            if (event.link.isNotBlank()){
+                Spacer(Modifier.height(16.dp))
+                Text(
+                    fontSize = 14.sp,
+                    text = event.link,
+                    color = MaterialTheme.colorScheme.primary,
+                    textDecoration = TextDecoration.Underline,
+                )
+            }
 
             Spacer(Modifier.height(32.dp))
 
@@ -151,6 +162,7 @@ fun EventCardPreview() {
                 content = "Приглашаю провести уютный вечер за увлекательными играми! " +
                         "У нас есть несколько вариантов настолок, " +
                         "подходящих для любой компании.",
+                link = "https://m2.material.io/components/cards",
                 likes = 2,
                 likedByMe = true,
                 participants = 2,
@@ -173,6 +185,7 @@ fun EventCardPreviewDark() {
                 content = "Приглашаю провести уютный вечер за увлекательными играми! " +
                         "У нас есть несколько вариантов настолок, " +
                         "подходящих для любой компании.",
+                link = "https://m2.material.io/components/cards",
                 likes = 2,
                 likedByMe = true,
                 participants = 2,
