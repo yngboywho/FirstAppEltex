@@ -1,4 +1,4 @@
-package com.eltex.firstapp
+package com.eltex.firstapp.feature.post
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background

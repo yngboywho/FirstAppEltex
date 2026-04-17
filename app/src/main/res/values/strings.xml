@@ -1,3 +1,27 @@
 <resources>
-    <string name="app_name">FirstApp</string>
+    <string name="app_name" translatable="false">FirstApp</string>
+
+    <string name="registration_title">Registration</string>
+    <string name="registration_success">Registration successful!</string>
+    <string name="register">Register</string>
+    <string name="name_hint">Name</string>
+    <string name="confirm_password_hint">Confirm password</string>
+    <string name="pick_avatar_description">Pick avatar</string>
+
+    <string name="reg_login_empty_error">Login must not be empty</string>
+    <string name="reg_login_too_short_error">Login must be at least 3 characters</string>
+    <string name="reg_password_empty_error">Password must not be empty</string>
+    <string name="reg_password_too_short_error">Password must be longer than 8 characters</string>
+    <string name="reg_password_too_long_error">Password must not exceed 128 characters</string>
+    <string name="reg_passwords_mismatch_error">Passwords do not match</string>
+
+     <string name="login_hint" translatable="false">Login</string>
+     <string name="password_hint" translatable="false">Password</string>
+     <string name="login_empty_error" translatable="false">Login must not be empty</string>
+     <string name="password_empty_error" translatable="false">Password must not be empty</string>
+     <string name="password_too_short_error" translatable="false">Password is too short</string>
+     <string name="login_success" translatable="false">Login successful!</string>
+     <string name="login" translatable="false">Login</string>
+     <string name="hide_password_description" translatable="false">Hide password</string>
+     <string name="show_password_description" translatable="false">Show password</string>
 </resources>

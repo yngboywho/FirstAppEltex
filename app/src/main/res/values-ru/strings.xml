@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="registration_title" translatable="false">Регистрация</string>
+    <string name="registration_success" translatable="false">Регистрация успешна</string>
+    <string name="register" translatable="false">Зарегистрироваться</string>
+    <string name="name_hint" translatable="false">Имя</string>
+    <string name="confirm_password_hint" translatable="false">Подтвердить пароль</string>
+    <string name="pick_avatar_description" translatable="false">Выбрать аватар</string>
+
+    <string name="reg_login_empty_error" translatable="false">Логин не может быть пуст</string>
+    <string name="reg_login_too_short_error" translatable="false">Логин должен содержать хотя бы 3 символа</string>
+    <string name="reg_password_empty_error" translatable="false">Пароль не может быть пуст</string>
+    <string name="reg_password_too_short_error" translatable="false">Пароль должен быть длиннее 8 символов</string>
+    <string name="reg_password_too_long_error" translatable="false">Пароль не может быть больше 128 символов</string>
+    <string name="reg_passwords_mismatch_error" translatable="false">Пароль не подходит</string>
+</resources>

@@ -1,4 +1,4 @@
-package com.eltex.firstapp
+package com.eltex.firstapp.feature.post
 
 data class EventUiModel(
     val id: Long = 0,
