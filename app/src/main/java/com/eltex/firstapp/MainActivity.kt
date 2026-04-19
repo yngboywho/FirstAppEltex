@@ -4,32 +4,20 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
-import com.eltex.firstapp.feature.post.EventCard
-import com.eltex.firstapp.feature.post.EventViewModel
+import com.eltex.firstapp.feature.post.EventListScreenRoute
 import com.eltex.firstapp.ui.theme.FirstAppTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val viewModel by viewModels<EventViewModel>()
         setContent {
             FirstAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    val state = viewModel.state
-
-                    EventCard(
-                        event = state,
-                        modifier = Modifier.padding(innerPadding),
-                        likeClicked = { viewModel.like() },
-                        shareClicked = { viewModel.share() },
-                        participateClicked = { viewModel.participate() },
-                    )
+                    EventListScreenRoute(contentPadding = innerPadding)
                 }
             }
         }

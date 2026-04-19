@@ -10,7 +10,7 @@ import com.eltex.firstapp.feature.registration.domain.validatePasswordConfirm
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
-class RegistrationViewModel: ViewModel() {
+class RegistrationViewModel : ViewModel() {
     var state by mutableStateOf(RegistrationState())
         private set
     private val _effects = MutableSharedFlow<RegistrationEffect>(
@@ -40,13 +40,13 @@ class RegistrationViewModel: ViewModel() {
             current.copy(confirmPassword = message.value, confirmPasswordError = null)
 
         RegistrationMessage.Submit -> {
-            val loginError   = validateLogin(current.login)
+            val loginError = validateLogin(current.login)
             val passwordError = validatePassword(current.password)
-            val confirmError  = validatePasswordConfirm(current.password, current.confirmPassword)
+            val confirmError = validatePasswordConfirm(current.password, current.confirmPassword)
 
             val newState = current.copy(
-                loginError           = loginError,
-                passwordError        = passwordError,
+                loginError = loginError,
+                passwordError = passwordError,
                 confirmPasswordError = confirmError,
             )
 

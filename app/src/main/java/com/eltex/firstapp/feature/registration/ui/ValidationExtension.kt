@@ -17,7 +17,7 @@ import com.eltex.firstapp.feature.registration.domain.PasswordTooShort
 fun LoginError?.toReadableString(): String? = when (this) {
     LoginEmpty -> stringResource(R.string.reg_login_empty_error)
     LoginTooShort -> stringResource(R.string.reg_login_too_short_error)
-    null          -> null
+    null -> null
 }
 
 @Composable
@@ -25,11 +25,11 @@ fun PasswordError?.toReadableString(): String? = when (this) {
     PasswordEmpty -> stringResource(R.string.reg_password_empty_error)
     PasswordTooShort -> stringResource(R.string.reg_password_too_short_error)
     PasswordTooLong -> stringResource(R.string.reg_password_too_long_error)
-    null             -> null
+    null -> null
 }
 
 @Composable
 fun ConfirmPasswordError?.toReadableString(): String? = when (this) {
     PasswordMismatch -> stringResource(R.string.reg_passwords_mismatch_error)
-    null             -> null
+    null -> null
 }
