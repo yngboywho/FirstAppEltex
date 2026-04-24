@@ -1,4 +1,4 @@
-package com.eltex.firstapp.feature.post
+package com.eltex.firstapp.feature.post.ui
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
@@ -20,6 +20,8 @@ import androidx.compose.material.icons.filled.GroupAdd
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -27,24 +29,33 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.eltex.firstapp.R
 import com.eltex.firstapp.ui.theme.FirstAppTheme
 
 @Composable
 fun EventCard(
     event: EventUiModel,
     modifier: Modifier = Modifier,
-    menuClicked: () -> Unit = {},
+    onEditClicked: () -> Unit = {},
+    onDeleteClicked: () -> Unit = {},
     likeClicked: () -> Unit = {},
     shareClicked: () -> Unit = {},
     participateClicked: () -> Unit = {},
 ) {
+    var menuExpanded by remember { mutableStateOf(false) }
+
     Card(modifier.fillMaxWidth()) {
         Column(Modifier.padding(top = 12.dp, bottom = 16.dp, start = 16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -68,8 +79,29 @@ fun EventCard(
                     Text(fontSize = 14.sp, text = event.published)
                 }
 
-                IconButton(menuClicked) {
-                    Icon(Icons.Default.MoreVert, null)
+                Box {
+                    IconButton(onClick = { menuExpanded = true }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = null)
+                    }
+                    DropdownMenu(
+                        expanded = menuExpanded,
+                        onDismissRequest = { menuExpanded = false },
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.menu_edit)) },
+                            onClick = {
+                                menuExpanded = false
+                                onEditClicked()
+                            },
+                        )
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.post_menu_delete)) },
+                            onClick = {
+                                menuExpanded = false
+                                onDeleteClicked()
+                            },
+                        )
+                    }
                 }
 
                 Spacer(Modifier.width(4.dp))

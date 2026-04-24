@@ -1,4 +1,4 @@
-package com.eltex.firstapp.feature.post
+package com.eltex.firstapp.feature.post.ui
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -8,7 +8,7 @@ import java.time.LocalDateTime
 
 class EventListViewModel: ViewModel() {
     var state by mutableStateOf(
-        EventListState(List(100, ::createEvent))
+        EventListState(List(10, ::createEvent))
     )
         private set
 
@@ -22,6 +22,20 @@ class EventListViewModel: ViewModel() {
     ): EventListState = when (message){
         is EventListMessage.Like -> current.copy(events = current.events.toggleLike(message.id))
         is EventListMessage.Participate -> current.copy(events = current.events.toggleParticipate(message.id))
+        is EventListMessage.SaveEdited -> current.copy(events = current.events.applyEdit(message.id, message.content))
+        is EventListMessage.AddPost -> current.copy(events = buildList {
+            add(EventUiModel(
+                id = (current.events.maxOfOrNull { it.id } ?: 0L) + 1L,
+                publishedAt = LocalDateTime.now(),
+                content = message.content,
+                author = "Me",
+            ))
+            addAll(current.events)
+        })
+
+        is EventListMessage.Delete -> current.copy(
+            events = current.events.filter { it.id != message.id }
+        )
     }
 
     private fun List<EventUiModel>.toggleLike(id: Long) = map { event ->
@@ -39,6 +53,12 @@ class EventListViewModel: ViewModel() {
             participants = if (event.participantsByMe) event.participants - 1 else event.participants + 1,
         )
     }
+
+    private fun List<EventUiModel>.applyEdit(id: Long, content: String) = map { event ->
+        if (event.id != id) event else event.copy(content = content)
+    }
+
+    fun findById(id: Long): EventUiModel? = state.events.find { it.id == id }
 
     private fun createEvent(count: Int): EventUiModel {
         val daysAgo = count/20L

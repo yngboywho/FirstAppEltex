@@ -24,4 +24,18 @@
      <string name="login" translatable="false">Login</string>
      <string name="hide_password_description" translatable="false">Hide password</string>
      <string name="show_password_description" translatable="false">Show password</string>
+
+    <string name="tab_posts">Posts</string>
+    <string name="tab_events">Events</string>
+    <string name="tab_users">Users</string>
+    <string name="new_post_title">New post</string>
+    <string name="auth_title">Login</string>
+    <string name="post_menu_delete">Delete</string>
+
+    <string name="edit_event_title">Edit event</string>
+    <string name="event_content_hint">Event description</string>
+    <string name="save">Save</string>
+    <string name="menu_edit">Edit</string>
+
+    <string name="no_account_register">Don\'t have an account? Register</string>
 </resources>

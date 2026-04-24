@@ -1,4 +1,4 @@
-package com.eltex.firstapp.feature.post
+package com.eltex.firstapp.feature.post.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -30,12 +30,14 @@ fun EventListScreenRoute(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues.Zero,
     viewModel: EventListViewModel = viewModel(),
+    onEditEvent: (Long) -> Unit = {},
 ) {
     EventListScreen(
         state = viewModel.state,
         modifier = modifier,
         contentPadding = contentPadding,
         onMessage = viewModel::accept,
+        onEditEvent = onEditEvent,
     )
 }
 
@@ -45,6 +47,7 @@ fun EventListScreen(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues.Zero,
     onMessage: (EventListMessage) -> Unit = {},
+    onEditEvent: (Long) -> Unit = {},
 ) {
     val layoutDirection = LocalLayoutDirection.current
 
@@ -84,6 +87,8 @@ fun EventListScreen(
                 is EventListItem.Event -> EventCard(
                     modifier = Modifier.animateItem(),
                     event = item.event,
+                    onEditClicked = { onEditEvent(item.event.id) },
+                    onDeleteClicked = { onMessage(EventListMessage.Delete(item.event.id)) },
                     likeClicked = { onMessage(EventListMessage.Like(item.event.id)) },
                     participateClicked = { onMessage(EventListMessage.Participate(item.event.id)) },
                 )
@@ -141,38 +146,17 @@ private fun EventListScreenPreview() {
         EventListScreen(
             EventListState(
                 events = listOf(
-                    EventUiModel(
-                        id = 1,
-                        publishedAt = today.atTime(10, 0),
-                        author = "Lydia Westervelt",
-                        published = "today",
-                        status = "Online",
-                        visit = "soon",
-                        content = "Событие сегодня",
-                    ),
-                    EventUiModel(
-                        id = 2,
-                        publishedAt = yesterday.atTime(15, 30),
-                        author = "Lydia Westervelt",
-                        published = "yesterday",
-                        status = "Offline",
-                        visit = "soon",
-                        content = "Событие вчера",
-                        likes = 3,
-                        likedByMe = true,
-                        participants = 2,
-                        participantsByMe = true,
-                    ),
-                    EventUiModel(
-                        id = 3,
-                        publishedAt = older.atTime(9, 0),
-                        author = "Lydia Westervelt",
-                        published = "older",
-                        status = "Offline",
-                        visit = "past",
-                        content = "Событие несколько дней назад",
-                        link = "https://example.com",
-                    ),
+                    EventUiModel(id = 1, publishedAt = today.atTime(10, 0),
+                        author = "Lydia Westervelt", published = "today",
+                        status = "Online", visit = "soon", content = "Событие сегодня"),
+                    EventUiModel(id = 2, publishedAt = yesterday.atTime(15, 30),
+                        author = "Lydia Westervelt", published = "yesterday",
+                        status = "Offline", visit = "soon", content = "Событие вчера",
+                        likes = 3, likedByMe = true, participants = 2, participantsByMe = true),
+                    EventUiModel(id = 3, publishedAt = older.atTime(9, 0),
+                        author = "Lydia Westervelt", published = "older",
+                        status = "Offline", visit = "past", content = "Давнее событие",
+                        link = "https://example.com"),
                 )
             )
         )

@@ -1,6 +1,5 @@
-package com.eltex.firstapp.feature.post
+package com.eltex.firstapp.feature.post.ui
 
-import android.annotation.TargetApi
 import java.time.LocalDateTime
 
 data class EventUiModel(

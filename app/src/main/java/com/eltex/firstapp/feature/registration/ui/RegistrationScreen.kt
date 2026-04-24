@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
@@ -46,6 +47,7 @@ import com.eltex.firstapp.ui.theme.FirstAppTheme
 @Composable
 fun RegistrationScreenRoute(
    onRegistered: () -> Unit = {},
+   onBack: () -> Unit = {},
    modifier: Modifier = Modifier,
    viewModel: RegistrationViewModel = viewModel(),
 ) {
@@ -69,7 +71,8 @@ fun RegistrationScreenRoute(
     RegistrationScreen(
         state = viewModel.state,
         modifier = modifier,
-        onMessage = viewModel::accept
+        onMessage = viewModel::accept,
+        onBack = onBack,
     )
 }
 
@@ -79,12 +82,22 @@ fun RegistrationScreen(
     state: RegistrationState,
     modifier: Modifier = Modifier,
     onMessage: (RegistrationMessage) -> Unit = {},
+    onBack: () -> Unit = {},
 ) {
     var isPasswordVisible by rememberSaveable { mutableStateOf(false) }
     var isConfirmPasswordVisible by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text(stringResource(R.string.registration_title)) }) }
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(R.string.registration_title)) },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                    }
+                },
+            )
+        }
     ) { innerPadding ->
         Column (
             modifier = modifier

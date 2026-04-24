@@ -1,4 +1,4 @@
-package com.eltex.firstapp.feature.post
+package com.eltex.firstapp.feature.post.ui
 
 import androidx.compose.runtime.Immutable
 

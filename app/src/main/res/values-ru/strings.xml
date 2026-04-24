@@ -14,4 +14,16 @@
     <string name="reg_password_too_short_error" translatable="false">Пароль должен быть длиннее 8 символов</string>
     <string name="reg_password_too_long_error" translatable="false">Пароль не может быть больше 128 символов</string>
     <string name="reg_passwords_mismatch_error" translatable="false">Пароль не подходит</string>
+
+    <string name="tab_posts">Посты</string>
+    <string name="tab_events">События</string>
+    <string name="tab_users">Пользователи</string>
+    <string name="new_post_title">Новый пост</string>
+    <string name="auth_title">Войти</string>
+    <string name="post_menu_delete">Удалить</string>
+    <string name="edit_event_title">Редактировать пост</string>
+    <string name="event_content_hint">Описание</string>
+    <string name="save">Сохранить</string>
+    <string name="menu_edit">Редактирование</string>
+    <string name="no_account_register">Нет аккаунта? Зарегистрируйтесь</string>
 </resources>
