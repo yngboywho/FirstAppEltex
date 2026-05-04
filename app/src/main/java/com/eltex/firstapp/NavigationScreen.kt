@@ -10,7 +10,7 @@ import androidx.navigation.toRoute
 import com.eltex.firstapp.feature.auth.ui.AuthScreenRoute
 import com.eltex.firstapp.feature.main.MainScreen
 import com.eltex.firstapp.feature.post.add.AddPostScreenRoute
-import com.eltex.firstapp.feature.event.data.LocalEventsRepository
+import com.eltex.firstapp.feature.event.data.SQLiteEventRepository
 import com.eltex.firstapp.feature.post.data.LocalPostsRepository
 import com.eltex.firstapp.feature.post.edit.EditEventScreenRoute
 import com.eltex.firstapp.feature.post.edit.EditPostScreenRoute
@@ -34,7 +34,7 @@ fun NavigationScreen() {
 
     val eventListViewModel: EventListViewModel = viewModel {
         EventListViewModel(
-            repository = LocalEventsRepository(context.applicationContext)
+            repository = SQLiteEventRepository(context.applicationContext)
         )
     }
 
