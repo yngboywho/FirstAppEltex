@@ -26,17 +26,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.eltex.firstapp.Navigation
 import com.eltex.firstapp.R
-import com.eltex.firstapp.feature.post.ui.EventListScreenRoute
-import com.eltex.firstapp.feature.post.ui.EventListViewModel
-import com.eltex.firstapp.ui.theme.FirstAppTheme
-
-
+import com.eltex.firstapp.feature.event.ui.EventListScreenRoute
+import com.eltex.firstapp.feature.event.ui.EventListViewModel
+import com.eltex.firstapp.feature.post.ui.PostListScreenRoute
+import com.eltex.firstapp.feature.post.ui.PostListViewModel
 enum class Tab(
     @param:StringRes val titleRes: Int,
     val icon: ImageVector
@@ -50,7 +47,8 @@ enum class Tab(
 @Composable
 fun MainScreen(
     navController: NavController = rememberNavController(),
-    eventListViewModel: EventListViewModel = viewModel(),
+    postListViewModel: PostListViewModel,
+    eventListViewModel: EventListViewModel,
 ) {
     var selectedTab by rememberSaveable { mutableStateOf(Tab.Posts) }
 
@@ -81,7 +79,7 @@ fun MainScreen(
                                 contentDescription = stringResource(tab.titleRes)
                             )
                         },
-                        label = { Text(stringResource(tab.titleRes))}
+                        label = { Text(stringResource(tab.titleRes)) }
                     )
                 }
             }
@@ -96,7 +94,14 @@ fun MainScreen(
                     }
                 }
 
-                Tab.Events,
+                Tab.Events -> {
+                    FloatingActionButton(onClick = {
+                        navController.navigate(Navigation.NewEvent)
+                    }) {
+                        Icon(Icons.Default.Add, null)
+                    }
+                }
+
                 Tab.Users -> Unit
             }
         }
@@ -104,21 +109,19 @@ fun MainScreen(
 
         Crossfade(modifier = Modifier.padding(insets), targetState = selectedTab) { tab ->
             when (tab) {
-                Tab.Posts -> EventListScreenRoute(
+                Tab.Posts -> PostListScreenRoute(
+                    viewModel = postListViewModel,
+                    onEditPost = { id -> navController.navigate(Navigation.EditPost(id)) },
+                )
+
+                Tab.Events -> EventListScreenRoute(
                     viewModel = eventListViewModel,
                     onEditEvent = { id -> navController.navigate(Navigation.EditEvent(id)) },
                 )
-                Tab.Events -> Unit
+
                 Tab.Users -> Unit
             }
         }
     }
 }
 
-@Preview
-@Composable
-fun MainScreenPreview() {
-    FirstAppTheme {
-        MainScreen()
-    }
-}

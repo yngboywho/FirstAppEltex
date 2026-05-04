@@ -15,8 +15,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.Group
-import androidx.compose.material.icons.filled.GroupAdd
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
@@ -45,14 +43,13 @@ import com.eltex.firstapp.R
 import com.eltex.firstapp.ui.theme.FirstAppTheme
 
 @Composable
-fun EventCard(
-    event: EventUiModel,
+fun PostCard(
+    post: PostUiModel,
     modifier: Modifier = Modifier,
     onEditClicked: () -> Unit = {},
     onDeleteClicked: () -> Unit = {},
     likeClicked: () -> Unit = {},
     shareClicked: () -> Unit = {},
-    participateClicked: () -> Unit = {},
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
 
@@ -65,7 +62,7 @@ fun EventCard(
                         .background(MaterialTheme.colorScheme.primary, shape = CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = event.author.take(1), color = MaterialTheme.colorScheme.onPrimary)
+                    Text(text = post.author.take(1), color = MaterialTheme.colorScheme.onPrimary)
                 }
 
                 Spacer(Modifier.width(16.dp))
@@ -74,9 +71,9 @@ fun EventCard(
                     Text(
                         fontWeight = FontWeight.Medium,
                         fontSize = 16.sp,
-                        text = event.author,
+                        text = post.author,
                     )
-                    Text(fontSize = 14.sp, text = event.published)
+                    Text(fontSize = 14.sp, text = post.published)
                 }
 
                 Box {
@@ -109,22 +106,13 @@ fun EventCard(
 
             Spacer(Modifier.height(12.dp))
 
-            Text(
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-                text = event.status
-            )
-            Text(fontSize = 14.sp, text = event.visit)
+            Text(modifier = Modifier.padding(top = 16.dp, end = 16.dp), text = post.content)
 
-            Spacer(Modifier.height(12.dp))
-
-            Text(modifier = Modifier.padding(top = 16.dp, end = 16.dp), text = event.content)
-
-            if (event.link.isNotBlank()){
+            if (post.link.isNotBlank()) {
                 Spacer(Modifier.height(16.dp))
                 Text(
                     fontSize = 14.sp,
-                    text = event.link,
+                    text = post.link,
                     color = MaterialTheme.colorScheme.primary,
                     textDecoration = TextDecoration.Underline,
                 )
@@ -135,7 +123,7 @@ fun EventCard(
             Row {
                 TextButton(likeClicked) {
                     Icon(
-                        if (event.likedByMe) {
+                        if (post.likedByMe) {
                             Icons.Default.Favorite
                         } else {
                             Icons.Default.FavoriteBorder
@@ -145,7 +133,7 @@ fun EventCard(
 
                     Spacer(Modifier.width(width = 8.dp))
 
-                    Text(event.likes.toString())
+                    Text(post.likes.toString())
                 }
 
                 Spacer(Modifier.width(8.dp))
@@ -161,21 +149,6 @@ fun EventCard(
                         null,
                     )
                 }
-
-                Spacer(Modifier.weight(1F))
-
-                TextButton(participateClicked) {
-                    Icon(
-                        if (event.participantsByMe) {
-                            Icons.Default.Group
-                        } else {
-                            Icons.Default.GroupAdd
-                        },
-                        contentDescription = null,
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text(event.participants.toString())
-                }
             }
         }
     }
@@ -183,22 +156,16 @@ fun EventCard(
 
 @Preview
 @Composable
-fun EventCardPreview() {
+fun PostCardPreview() {
     FirstAppTheme {
-        EventCard(
-            EventUiModel(
+        PostCard(
+            PostUiModel(
                 author = "Lydia Westervelt",
                 published = "11.05.22 11:21",
-                status = "Offline",
-                visit = "16.05.22 12:00",
-                content = "Приглашаю провести уютный вечер за увлекательными играми! " +
-                        "У нас есть несколько вариантов настолок, " +
-                        "подходящих для любой компании.",
+                content = "Сегодня поделюсь интересными находками из последних проектов.",
                 link = "https://m2.material.io/components/cards",
                 likes = 2,
                 likedByMe = true,
-                participants = 2,
-                participantsByMe = false,
             )
         )
     }
@@ -206,22 +173,15 @@ fun EventCardPreview() {
 
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL)
 @Composable
-fun EventCardPreviewDark() {
+fun PostCardPreviewDark() {
     FirstAppTheme {
-        EventCard(
-            EventUiModel(
+        PostCard(
+            PostUiModel(
                 author = "Lydia Westervelt",
                 published = "11.05.22 11:21",
-                status = "Offline",
-                visit = "16.05.22 12:00",
-                content = "Приглашаю провести уютный вечер за увлекательными играми! " +
-                        "У нас есть несколько вариантов настолок, " +
-                        "подходящих для любой компании.",
-                link = "https://m2.material.io/components/cards",
-                likes = 2,
-                likedByMe = true,
-                participants = 2,
-                participantsByMe = true,
+                content = "Сегодня поделюсь интересными находками из последних проектов.",
+                likes = 5,
+                likedByMe = false,
             )
         )
     }

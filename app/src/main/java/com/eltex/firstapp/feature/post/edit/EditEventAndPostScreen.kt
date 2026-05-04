@@ -24,9 +24,47 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eltex.firstapp.R
-import com.eltex.firstapp.feature.post.ui.EventListMessage
-import com.eltex.firstapp.feature.post.ui.EventListViewModel
+import com.eltex.firstapp.feature.event.ui.EventListMessage
+import com.eltex.firstapp.feature.event.ui.EventListViewModel
+import com.eltex.firstapp.feature.post.ui.PostListMessage
+import com.eltex.firstapp.feature.post.ui.PostListViewModel
 import com.eltex.firstapp.ui.theme.FirstAppTheme
+
+@Composable
+fun EditPostScreenRoute(
+    postId: Long,
+    listViewModel: PostListViewModel,
+    onDone: () -> Unit = {},
+) {
+    val post = listViewModel.findById(postId)
+    if (post == null) {
+        LaunchedEffect(Unit) { onDone() }
+        return
+    }
+
+    val editViewModel: EditEventViewModel = viewModel(
+        factory = EditEventViewModelFactory(id = post.id, content = post.content)
+    )
+
+    LaunchedEffect(Unit) {
+        editViewModel.effects.collect { effect ->
+            when (effect) {
+                is EditPostEffect.NavigateBack -> {
+                    listViewModel.accept(
+                        PostListMessage.SaveEdited(effect.id, effect.content)
+                    )
+                    onDone()
+                }
+            }
+        }
+    }
+
+    EditEventAndPostScreen(
+        state = editViewModel.state,
+        onMessage = editViewModel::accept,
+        onBack = onDone,
+    )
+}
 
 @Composable
 fun EditEventScreenRoute(
@@ -57,7 +95,7 @@ fun EditEventScreenRoute(
         }
     }
 
-    EditEventScreen(
+    EditEventAndPostScreen(
         state = editViewModel.state,
         onMessage = editViewModel::accept,
         onBack = onDone,
@@ -66,7 +104,7 @@ fun EditEventScreenRoute(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditEventScreen(
+fun EditEventAndPostScreen(
     state: EditPostState,
     modifier: Modifier = Modifier,
     onMessage: (EditPostMessage) -> Unit = {},
@@ -120,7 +158,7 @@ fun EditEventScreen(
 @Composable
 fun EditEventScreenPreview() {
     FirstAppTheme {
-        EditEventScreen(
+        EditEventAndPostScreen(
             state = EditPostState(
                 id = 1L,
                 content = "Приглашаю провести уютный вечер за настолками!",

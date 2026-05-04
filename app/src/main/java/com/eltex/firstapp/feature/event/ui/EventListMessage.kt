@@ -1,4 +1,4 @@
-package com.eltex.firstapp.feature.post.ui
+package com.eltex.firstapp.feature.event.ui
 
 sealed interface EventListMessage {
     data class Like(val id: Long): EventListMessage
