@@ -5,6 +5,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.eltex.firstapp.feature.event.domain.EventsRepository
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class EventListViewModel(
     private val repository: EventsRepository,
@@ -38,7 +41,13 @@ class EventListViewModel(
         }
 
         is EventListMessage.AddPost -> {
-            val saved = repository.save(content = message.content, author = "Me")
+            val saved = repository.save(
+                content = message.content,
+                author = "Me",
+                status = "Online",
+                visit = LocalDateTime.now().format(
+                DateTimeFormatter.ofPattern("dd.MM.yy HH:mm", Locale.getDefault()))
+            )
             current.copy(events = buildList {
                 add(saved.toUiModel())
                 addAll(current.events)

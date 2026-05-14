@@ -116,7 +116,7 @@ fun EventCard(
             )
             Text(fontSize = 14.sp, text = event.visit)
 
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(8.dp))
 
             Text(modifier = Modifier.padding(top = 16.dp, end = 16.dp), text = event.content)
 

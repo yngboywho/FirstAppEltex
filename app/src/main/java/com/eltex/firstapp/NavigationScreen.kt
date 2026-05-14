@@ -7,10 +7,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import com.eltex.firstapp.data.AppDb
 import com.eltex.firstapp.feature.auth.ui.AuthScreenRoute
+import com.eltex.firstapp.feature.event.data.EventsRepositoryImpl
 import com.eltex.firstapp.feature.main.MainScreen
 import com.eltex.firstapp.feature.post.add.AddPostScreenRoute
-import com.eltex.firstapp.feature.event.data.SQLiteEventRepository
 import com.eltex.firstapp.feature.post.data.LocalPostsRepository
 import com.eltex.firstapp.feature.post.edit.EditEventScreenRoute
 import com.eltex.firstapp.feature.post.edit.EditPostScreenRoute
@@ -34,7 +35,7 @@ fun NavigationScreen() {
 
     val eventListViewModel: EventListViewModel = viewModel {
         EventListViewModel(
-            repository = SQLiteEventRepository(context.applicationContext)
+            repository = EventsRepositoryImpl(AppDb.getInstance(context.applicationContext).eventDao)
         )
     }
 
