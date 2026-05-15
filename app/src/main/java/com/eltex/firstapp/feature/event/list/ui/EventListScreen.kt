@@ -1,4 +1,4 @@
-package com.eltex.firstapp.feature.event.ui
+package com.eltex.firstapp.feature.event.list.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues

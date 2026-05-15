@@ -1,4 +1,4 @@
-package com.eltex.firstapp.feature.event.ui
+package com.eltex.firstapp.feature.event.list.ui
 
 import com.eltex.firstapp.feature.event.domain.Event
 import java.time.LocalDateTime

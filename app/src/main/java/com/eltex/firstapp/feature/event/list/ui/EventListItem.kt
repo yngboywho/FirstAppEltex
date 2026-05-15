@@ -1,4 +1,4 @@
-package com.eltex.firstapp.feature.event.ui
+package com.eltex.firstapp.feature.event.list.ui
 
 sealed interface EventListItem {
     data class DateSeparator(val label: String, val epochDay: Long): EventListItem

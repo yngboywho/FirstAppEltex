@@ -15,8 +15,8 @@ import com.eltex.firstapp.feature.post.add.AddPostScreenRoute
 import com.eltex.firstapp.feature.post.data.LocalPostsRepository
 import com.eltex.firstapp.feature.post.edit.EditEventScreenRoute
 import com.eltex.firstapp.feature.post.edit.EditPostScreenRoute
-import com.eltex.firstapp.feature.event.ui.EventListMessage
-import com.eltex.firstapp.feature.event.ui.EventListViewModel
+import com.eltex.firstapp.feature.event.list.ui.EventListMessage
+import com.eltex.firstapp.feature.event.list.ui.EventListViewModel
 import com.eltex.firstapp.feature.post.ui.PostListMessage
 import com.eltex.firstapp.feature.post.ui.PostListViewModel
 import com.eltex.firstapp.feature.registration.ui.RegistrationScreenRoute

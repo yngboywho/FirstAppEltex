@@ -30,8 +30,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.eltex.firstapp.Navigation
 import com.eltex.firstapp.R
-import com.eltex.firstapp.feature.event.ui.EventListScreenRoute
-import com.eltex.firstapp.feature.event.ui.EventListViewModel
+import com.eltex.firstapp.feature.event.list.ui.EventListScreenRoute
+import com.eltex.firstapp.feature.event.list.ui.EventListViewModel
 import com.eltex.firstapp.feature.post.ui.PostListScreenRoute
 import com.eltex.firstapp.feature.post.ui.PostListViewModel
 enum class Tab(

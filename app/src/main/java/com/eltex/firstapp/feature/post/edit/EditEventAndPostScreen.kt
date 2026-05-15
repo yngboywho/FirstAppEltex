@@ -24,8 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eltex.firstapp.R
-import com.eltex.firstapp.feature.event.ui.EventListMessage
-import com.eltex.firstapp.feature.event.ui.EventListViewModel
+import com.eltex.firstapp.feature.event.list.ui.EventListMessage
+import com.eltex.firstapp.feature.event.list.ui.EventListViewModel
 import com.eltex.firstapp.feature.post.ui.PostListMessage
 import com.eltex.firstapp.feature.post.ui.PostListViewModel
 import com.eltex.firstapp.ui.theme.FirstAppTheme
