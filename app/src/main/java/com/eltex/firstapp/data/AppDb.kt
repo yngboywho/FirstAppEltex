@@ -27,7 +27,7 @@ abstract class AppDb : RoomDatabase() {
             AppDb::class.java,
             "app.db",
         )
-            .createFromAsset("mybd.db")
+            .createFromAsset("myapp.db")
             .fallbackToDestructiveMigration(true)
             .allowMainThreadQueries()
             .build()
