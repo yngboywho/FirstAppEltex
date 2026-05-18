@@ -37,27 +37,13 @@ class EventsRepositoryImpl(private val dao: EventDao) : EventsRepository {
     }
 
     override fun likeById(id: Long): Event {
-        val entity = dao.getById(id)
-        val updated = if (entity.likedByMe) {
-            entity.copy(likedByMe = false, likes = entity.likes - 1)
-        } else {
-            entity.copy(likedByMe = true, likes = entity.likes + 1)
-        }
-
-        dao.update(updated)
-        return updated.toDomain()
+        dao.likeById(id)
+        return dao.getById(id).toDomain()
     }
 
     override fun participateById(id: Long): Event {
-        val entity = dao.getById(id)
-        val updated = if (entity.participantsByMe) {
-            entity.copy(participantsByMe = false, participants = entity.participants - 1)
-        } else {
-            entity.copy(participantsByMe = true, participants = entity.participants + 1)
-        }
-
-        dao.update(updated)
-        return updated.toDomain()
+        dao.participateById(id)
+        return dao.getById(id).toDomain()
     }
 
     override fun deleteById(id: Long) {

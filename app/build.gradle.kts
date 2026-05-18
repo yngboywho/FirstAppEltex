@@ -60,6 +60,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
+    implementation(platform(libs.okhttp.bom))
+    implementation(libs.logging.interceptor)
     implementation(libs.androidx.room)
     ksp(libs.androidx.room.compiler)
     testImplementation(libs.junit)
