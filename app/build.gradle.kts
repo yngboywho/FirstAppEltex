@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -10,6 +12,14 @@ android {
     namespace = "com.eltex.firstapp"
     compileSdk = 36
 
+    val secretsProperties = rootDir.resolve("secrets.properties")
+        .bufferedReader()
+        .use {
+            Properties().apply {
+                load(it)
+            }
+        }
+
     defaultConfig {
         applicationId = "com.eltex.firstapp"
         minSdk = 26
@@ -18,6 +28,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "API_KEY", secretsProperties.getProperty("API_KEY"))
+        buildConfigField("String", "Authorization", secretsProperties.getProperty("Authorization"))
     }
 
     buildTypes {
@@ -37,6 +50,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

@@ -1,11 +1,11 @@
 package com.eltex.firstapp.feature.event.domain
 
 interface EventsRepository {
-    fun getAll(): List<Event>
+    fun getEvents(callback: Callback<List<Event>>)
     fun save(content: String, author: String, status: String = "", visit: String = "",
-             link: String = ""): Event
-    fun update(id: Long, content: String): Event
-    fun likeById(id: Long): Event
-    fun participateById(id: Long): Event
-    fun deleteById(id: Long)
+             link: String = "", callback: Callback<Event>)
+    fun update(id: Long, content: String, callback: Callback<Event>)
+    fun likeById(id: Long, callback: Callback<Event>)
+    fun participateById(id: Long, callback: Callback<Event>)
+    fun deleteById(id: Long, callback: Callback<Unit>)
 }

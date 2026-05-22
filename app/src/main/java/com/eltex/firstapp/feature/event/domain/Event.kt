@@ -1,8 +1,5 @@
 package com.eltex.firstapp.feature.event.domain
 
-import kotlinx.serialization.Serializable
-
-@Serializable
 data class Event(
     val id: Long = 0,
     val publishedAt: String,

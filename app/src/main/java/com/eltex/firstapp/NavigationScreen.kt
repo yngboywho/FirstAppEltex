@@ -35,7 +35,7 @@ fun NavigationScreen() {
 
     val eventListViewModel: EventListViewModel = viewModel {
         EventListViewModel(
-            repository = EventsRepositoryImpl(AppDb.getInstance(context.applicationContext).eventDao)
+            repository = EventsRepositoryImpl()
         )
     }
 
