@@ -76,6 +76,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(platform(libs.okhttp.bom))
     implementation(libs.logging.interceptor)
+    implementation(libs.converter.kotlinx.serialization)
     implementation(libs.androidx.room)
     ksp(libs.androidx.room.compiler)
     testImplementation(libs.junit)

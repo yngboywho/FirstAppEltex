@@ -1,63 +1,43 @@
 package com.eltex.firstapp.feature.event.data
 
-import com.eltex.firstapp.BuildConfig
 import com.eltex.firstapp.feature.event.domain.Callback
 import com.eltex.firstapp.feature.event.domain.Event
 import com.eltex.firstapp.feature.event.domain.EventsRepository
-import kotlinx.serialization.json.Json
-import okhttp3.Call
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
-import okhttp3.logging.HttpLoggingInterceptor
-import okio.IOException
-import java.time.LocalDateTime
-import java.util.concurrent.TimeUnit
+import retrofit2.Call
+import retrofit2.Response
 
 class EventsRepositoryImpl : EventsRepository {
 
-    private val json = Json { ignoreUnknownKeys = true }
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .addInterceptor(HttpLoggingInterceptor().apply {
-            level = if (BuildConfig.DEBUG) {
-                HttpLoggingInterceptor.Level.BODY
-            } else {
-                HttpLoggingInterceptor.Level.NONE
-            }
-        })
-        .build()
-
-    private data class EventRequest(
-        val content: String,
-        val type: String,
-        val datetime: String,
-        val link: String? = null,
-    )
-
     override fun getEvents(callback: Callback<List<Event>>) {
-        client.newCall(
-            Request.Builder()
-                .url("https://eltex-android.ru/api/events")
-                .header("Api-Key", BuildConfig.API_KEY)
-                .build()
-        )
+        EventApi.value.getEvents()
             .enqueue(
-                object: okhttp3.Callback {
-                    override fun onFailure(call: Call, e: IOException) {
-                        callback.onError(e)
-                    }
-
-                    override fun onResponse(call: Call, response: Response) {
+                object : retrofit2.Callback<List<EventDto>> {
+                    override fun onResponse(
+                        call: Call<List<EventDto>>,
+                        response: Response<List<EventDto>?>,
+                    ) {
                         if (response.isSuccessful) {
-                            callback.onSuccess(json.decodeFromString<List<EventDto>>(response.body.string()).map { it.toDomain() })
+                            response.body()?.map(EventDto::toDomain)?.let {
+                                callback.onSuccess(it)
+                            } ?: run {
+                                callback.onError(
+                                    RuntimeException(
+                                        response.errorBody()?.string()
+                                    )
+                                )
+                            }
                         } else {
-                            callback.onError(RuntimeException(response.body.string()))
+                            callback.onError(RuntimeException(response.errorBody()?.string()))
                         }
                     }
+
+                    override fun onFailure(
+                        call: Call<List<EventDto>>,
+                        t: Throwable,
+                    ) {
+                        callback.onError(RuntimeException(t))
+                    }
+
                 }
             )
     }
@@ -70,33 +50,34 @@ class EventsRepositoryImpl : EventsRepository {
         link: String,
         callback: Callback<Event>,
     ) {
-        val body = json.encodeToString(
-            EventRequest(
-                content = content,
-                type = status,
-                datetime = visit,
-                link = link.ifBlank { null },
-            )
-        ).toRequestBody("application/json".toMediaType())
-
-        client.newCall(
-            Request.Builder()
-                .url("https://eltex-android.ru/api/events")
-                .header("Api-Key", BuildConfig.API_KEY)
-                .header("Authorization", BuildConfig.Authorization)
-                .post(body)
-                .build()
-        ).enqueue(object : okhttp3.Callback {
-            override fun onFailure(call: Call, e: IOException) = callback.onError(e)
-
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    callback.onSuccess(json.decodeFromString<EventDto>(response.body.string()).toDomain())
-                } else {
-                    callback.onError(RuntimeException(response.body.string()))
+        val request = EventRequest(
+            content = content,
+            type = status,
+            datetime = visit,
+            link = link.ifBlank { null },
+        )
+        EventApi.value.saveEvent(request)
+            .enqueue(object : retrofit2.Callback<EventDto> {
+                override fun onResponse(
+                    call: Call<EventDto>,
+                    response: Response<EventDto?>,
+                ) {
+                    if (response.isSuccessful) {
+                        response.body()?.toDomain()?.let {
+                            callback.onSuccess(it)
+                        } ?: callback.onError(RuntimeException(response.errorBody()?.string()))
+                    } else {
+                        callback.onError(RuntimeException(response.errorBody()?.string()))
+                    }
                 }
-            }
-        })
+
+                override fun onFailure(
+                    call: Call<EventDto>,
+                    t: Throwable,
+                ) {
+                    callback.onError(RuntimeException(t))
+                }
+            })
     }
 
     override fun update(
@@ -107,36 +88,42 @@ class EventsRepositoryImpl : EventsRepository {
         getEvents(object : Callback<List<Event>> {
             override fun onSuccess(value: List<Event>) {
                 val existing = value.first { it.id == id }
-                val body = json.encodeToString(
-                    EventRequest(
-                        content = content,
-                        type = existing.status,
-                        datetime = existing.visit,
-                        link = existing.link.ifBlank { null },
-                    )
-                ).toRequestBody("application/json".toMediaType())
+                val request = EventRequest(
+                    content = content,
+                    type = existing.status,
+                    datetime = existing.visit,
+                    link = existing.link.ifBlank { null },
+                )
 
-                client.newCall(
-                    Request.Builder()
-                        .url("https://eltex-android.ru/api/events/$id")
-                        .header("Api-Key", BuildConfig.API_KEY)
-                        .header("Authorization", BuildConfig.Authorization)
-                        .put(body)
-                        .build()
-                ).enqueue(object : okhttp3.Callback {
-                    override fun onFailure(call: Call, e: IOException) {
-                        callback.onError(RuntimeException(e))
-                    }
-
-                    override fun onResponse(call: Call, response: Response) {
-                        if (response.isSuccessful) {
-                            callback.onSuccess(json.decodeFromString<EventDto>(response.body.string()).toDomain())
-                        } else {
-                            callback.onError(RuntimeException(response.body.string()))
+                EventApi.value.updateEvent(id, request)
+                    .enqueue(object : retrofit2.Callback<EventDto> {
+                        override fun onResponse(
+                            call: Call<EventDto?>,
+                            response: Response<EventDto?>,
+                        ) {
+                            if (response.isSuccessful) {
+                                response.body()?.toDomain()?.let {
+                                    callback.onSuccess(it)
+                                } ?: callback.onError(
+                                    RuntimeException(
+                                        response.errorBody()?.string()
+                                    )
+                                )
+                            } else {
+                                callback.onError(RuntimeException(response.errorBody()?.string()))
+                            }
                         }
-                    }
-                })
+
+                        override fun onFailure(
+                            call: Call<EventDto?>,
+                            t: Throwable,
+                        ) {
+                            callback.onError(RuntimeException(t))
+                        }
+
+                    })
             }
+
             override fun onError(error: Exception) = callback.onError(error)
         })
     }
@@ -145,80 +132,81 @@ class EventsRepositoryImpl : EventsRepository {
         id: Long,
         callback: Callback<Event>,
     ) {
-        client.newCall(
-            Request.Builder()
-                .url("https://eltex-android.ru/api/events/$id/likes")
-                .post(RequestBody.EMPTY)
-                .header("Api-Key", BuildConfig.API_KEY)
-                .header("Authorization", BuildConfig.Authorization)
-                .build()
-        ).enqueue(object : okhttp3.Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                callback.onError(RuntimeException(e))
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    callback.onSuccess(json.decodeFromString<EventDto>(response.body.string()).toDomain())
-                } else {
-                    callback.onError(RuntimeException(response.body.string()))
+        EventApi.value.like(id)
+            .enqueue(object : retrofit2.Callback<EventDto> {
+                override fun onResponse(
+                    call: Call<EventDto?>,
+                    response: Response<EventDto?>,
+                ) {
+                    if (response.isSuccessful) {
+                        response.body()?.toDomain()?.let {
+                            callback.onSuccess(it)
+                        } ?: callback.onError(RuntimeException(response.errorBody()?.string()))
+                    } else {
+                        callback.onError(RuntimeException(response.errorBody()?.string()))
+                    }
                 }
-            }
 
-        })
+                override fun onFailure(
+                    call: Call<EventDto?>,
+                    t: Throwable,
+                ) {
+                    callback.onError(RuntimeException(t))
+                }
+
+            })
     }
 
     override fun participateById(
         id: Long,
         callback: Callback<Event>,
     ) {
-        client.newCall(
-            Request.Builder()
-                .url("https://eltex-android.ru/api/events/$id/participants")
-                .post(RequestBody.EMPTY)
-                .header("Api-Key", BuildConfig.API_KEY)
-                .header("Authorization", BuildConfig.Authorization)
-                .build()
-        ).enqueue(object : okhttp3.Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                callback.onError(RuntimeException(e))
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    callback.onSuccess(json.decodeFromString<EventDto>(response.body.string()).toDomain())
-                } else {
-                    callback.onError(RuntimeException(response.body.string()))
+        EventApi.value.participate(id)
+            .enqueue(object : retrofit2.Callback<EventDto> {
+                override fun onResponse(
+                    call: Call<EventDto?>,
+                    response: Response<EventDto?>,
+                ) {
+                    if (response.isSuccessful) {
+                        response.body()?.toDomain()?.let {
+                            callback.onSuccess(it)
+                        } ?: callback.onError(RuntimeException(response.errorBody()?.string()))
+                    } else {
+                        callback.onError(RuntimeException(response.errorBody()?.string()))
+                    }
                 }
-            }
-        })
+
+                override fun onFailure(
+                    call: Call<EventDto?>,
+                    t: Throwable,
+                ) {
+                    callback.onError(RuntimeException(t))
+                }
+
+            })
     }
 
     override fun deleteById(
         id: Long,
         callback: Callback<Unit>,
     ) {
-        client.newCall(
-            Request.Builder()
-                .url("https://eltex-android.ru/api/events/$id")
-                .delete()
-                .header("Api-Key", BuildConfig.API_KEY)
-                .header("Authorization", BuildConfig.Authorization)
-                .build()
-        ).enqueue(object : okhttp3.Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                callback.onError(RuntimeException(e))
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    callback.onSuccess(Unit)
-                } else {
-                    callback.onError(RuntimeException(response.body.string()))
+        EventApi.value.delete(id)
+            .enqueue(object : retrofit2.Callback<Unit> {
+                override fun onResponse(
+                    call: Call<Unit?>,
+                    response: Response<Unit?>,
+                ) {
+                    if (response.isSuccessful) {
+                        callback.onSuccess(Unit)
+                    } else {
+                        callback.onError(RuntimeException(response.errorBody()?.string()))
+                    }
                 }
-            }
 
-        })
+                override fun onFailure(call: Call<Unit?>, t: Throwable) {
+                    callback.onError(RuntimeException(t))
+                }
+            })
     }
 
 }
