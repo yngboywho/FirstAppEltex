@@ -23,8 +23,14 @@ interface EventApi {
     @POST("events/{id}/likes")
     fun like(@Path("id") id: Long): Call<EventDto>
 
+    @DELETE("events/{id}/likes")
+    fun unlike(@Path("id") id: Long): Call<EventDto>
+
     @POST("events/{id}/participate")
     fun participate(@Path("id") id: Long): Call<EventDto>
+
+    @DELETE("events{id}/participate")
+    fun unparticipate(@Path("id") id: Long): Call<EventDto>
 
     @DELETE("events/{id}")
     fun delete(@Path("id") id: Long): Call<Unit>

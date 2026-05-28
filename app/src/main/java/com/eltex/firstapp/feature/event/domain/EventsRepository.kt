@@ -5,7 +5,7 @@ interface EventsRepository {
     fun save(content: String, author: String, status: String = "", visit: String = "",
              link: String = "", callback: Callback<Event>)
     fun update(id: Long, content: String, callback: Callback<Event>)
-    fun likeById(id: Long, callback: Callback<Event>)
-    fun participateById(id: Long, callback: Callback<Event>)
+    fun likeById(id: Long, likedByMe: Boolean, callback: Callback<Event>)
+    fun participateById(id: Long, participatedByMe: Boolean, callback: Callback<Event>)
     fun deleteById(id: Long, callback: Callback<Unit>)
 }

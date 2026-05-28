@@ -130,10 +130,11 @@ class EventsRepositoryImpl : EventsRepository {
 
     override fun likeById(
         id: Long,
-        callback: Callback<Event>,
+        likedByMe: Boolean,
+        callback: Callback<Event>
     ) {
-        EventApi.value.like(id)
-            .enqueue(object : retrofit2.Callback<EventDto> {
+        val call = if (likedByMe) EventApi.value.unlike(id) else EventApi.value.like(id)
+            call.enqueue(object : retrofit2.Callback<EventDto> {
                 override fun onResponse(
                     call: Call<EventDto?>,
                     response: Response<EventDto?>,
@@ -159,10 +160,11 @@ class EventsRepositoryImpl : EventsRepository {
 
     override fun participateById(
         id: Long,
-        callback: Callback<Event>,
+        participatedByMe: Boolean,
+        callback: Callback<Event>
     ) {
-        EventApi.value.participate(id)
-            .enqueue(object : retrofit2.Callback<EventDto> {
+        val call = if (participatedByMe) EventApi.value.unparticipate(id) else EventApi.value.participate(id)
+            call.enqueue(object : retrofit2.Callback<EventDto> {
                 override fun onResponse(
                     call: Call<EventDto?>,
                     response: Response<EventDto?>,

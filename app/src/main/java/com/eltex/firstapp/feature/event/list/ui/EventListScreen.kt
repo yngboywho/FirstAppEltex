@@ -89,8 +89,8 @@ fun EventListScreen(
                     event = item.event,
                     onEditClicked = { onEditEvent(item.event.id) },
                     onDeleteClicked = { onMessage(EventListMessage.Delete(item.event.id)) },
-                    likeClicked = { onMessage(EventListMessage.Like(item.event.id)) },
-                    participateClicked = { onMessage(EventListMessage.Participate(item.event.id)) },
+                    likeClicked = { onMessage(EventListMessage.Like(item.event.id, item.event.likedByMe)) },
+                    participateClicked = { onMessage(EventListMessage.Participate(item.event.id, item.event.participantsByMe)) },
                 )
             }
         }

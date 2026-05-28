@@ -27,7 +27,10 @@ class EventListViewModel(
 
     fun accept(message: EventListMessage) {
         when (message) {
-            is EventListMessage.Like -> repository.likeById(message.id, object : Callback<Event> {
+            is EventListMessage.Like -> repository.likeById(
+                message.id,
+                message.likedByMe,
+                object : Callback<Event> {
                     override fun onSuccess(value: Event) = mainHandler.post {
                         state = state.copy(events = state.events.replaceById(value.toUiModel()))
                     }.let {}
@@ -35,7 +38,10 @@ class EventListViewModel(
                     override fun onError(error: Exception) = Unit
             })
 
-            is EventListMessage.Participate -> repository.participateById(message.id, object : Callback<Event> {
+            is EventListMessage.Participate -> repository.participateById(
+                message.id,
+                message.participatedByMe,
+                object : Callback<Event> {
                     override fun onSuccess(value: Event) = mainHandler.post {
                         state = state.copy(events = state.events.replaceById(value.toUiModel()))
                     }.let {}
