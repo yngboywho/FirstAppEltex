@@ -38,4 +38,7 @@
     <string name="menu_edit">Edit</string>
 
     <string name="no_account_register">Don\'t have an account? Register</string>
+
+    <string name="network_error">Network error</string>
+    <string name="retry">Retry</string>
 </resources>

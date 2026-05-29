@@ -6,4 +6,5 @@ sealed interface EventListMessage {
     data class SaveEdited(val id: Long, val content: String) : EventListMessage
     data class AddPost(val content: String) : EventListMessage
     data class Delete(val id: Long): EventListMessage
+    data object Retry : EventListMessage
 }

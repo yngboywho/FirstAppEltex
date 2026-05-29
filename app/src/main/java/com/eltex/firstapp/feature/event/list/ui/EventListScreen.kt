@@ -20,6 +20,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.eltex.firstapp.feature.domain.LoadingState
+import com.eltex.firstapp.ui.ErrorScreen
+import com.eltex.firstapp.ui.LoadingScreen
 import com.eltex.firstapp.ui.theme.FirstAppTheme
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -32,13 +35,27 @@ fun EventListScreenRoute(
     viewModel: EventListViewModel = viewModel(),
     onEditEvent: (Long) -> Unit = {},
 ) {
-    EventListScreen(
-        state = viewModel.state,
-        modifier = modifier,
-        contentPadding = contentPadding,
-        onMessage = viewModel::accept,
-        onEditEvent = onEditEvent,
-    )
+    val state = viewModel.state
+
+    when (state.status) {
+        LoadingState.Idle -> {
+            EventListScreen(
+                state = viewModel.state,
+                modifier = modifier,
+                contentPadding = contentPadding,
+                onMessage = viewModel::accept,
+                onEditEvent = onEditEvent,
+            )
+        }
+
+        is LoadingState.Error -> {
+            ErrorScreen(modifier = modifier, onRetry = {
+                viewModel.accept(EventListMessage.Retry)
+            })
+        }
+
+        LoadingState.Loading -> LoadingScreen(modifier = modifier)
+    }
 }
 
 @Composable
