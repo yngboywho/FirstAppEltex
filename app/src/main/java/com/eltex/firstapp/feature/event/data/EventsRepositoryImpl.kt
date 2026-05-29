@@ -1,12 +1,9 @@
 package com.eltex.firstapp.feature.event.data
 
-import com.eltex.firstapp.feature.event.domain.Callback
 import com.eltex.firstapp.feature.event.domain.Event
 import com.eltex.firstapp.feature.event.domain.EventsRepository
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Single
-import retrofit2.Call
-import retrofit2.Response
 
 class EventsRepositoryImpl : EventsRepository {
 

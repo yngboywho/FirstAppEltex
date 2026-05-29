@@ -1,14 +1,10 @@
 package com.eltex.firstapp.feature.event.list.ui
 
-import android.os.Handler
-import android.os.Looper
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.eltex.firstapp.feature.domain.LoadingState
-import com.eltex.firstapp.feature.event.domain.Callback
-import com.eltex.firstapp.feature.event.domain.Event
 import com.eltex.firstapp.feature.event.domain.EventsRepository
 import com.eltex.firstapp.feature.util.AppSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
