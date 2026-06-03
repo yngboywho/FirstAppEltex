@@ -1,6 +1,5 @@
 package com.eltex.firstapp.feature.event.list.ui
 
-import com.eltex.firstapp.TestSchedulers
 import com.eltex.firstapp.feature.domain.LoadingState
 import com.eltex.firstapp.feature.event.domain.Event
 import com.eltex.firstapp.feature.event.domain.EventsRepository

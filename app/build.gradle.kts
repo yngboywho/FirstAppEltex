@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.kotlin.ksp)
 }
 
 android {
@@ -77,12 +76,10 @@ dependencies {
     implementation(platform(libs.okhttp.bom))
     implementation(libs.logging.interceptor)
     implementation(libs.converter.kotlinx.serialization)
-    implementation(libs.adapter.rxjava3)
-    implementation(libs.rxandroid)
-    implementation(libs.rxkotlin)
-    implementation(libs.androidx.room)
-    ksp(libs.androidx.room.compiler)
+
     testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

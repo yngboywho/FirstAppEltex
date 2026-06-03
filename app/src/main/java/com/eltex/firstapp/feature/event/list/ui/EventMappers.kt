@@ -10,18 +10,18 @@ import java.time.format.DateTimeFormatter
 private val displayFormatter = DateTimeFormatter.ofPattern("dd.MM.yy HH:mm")
 
 fun Event.toUiModel(): EventUiModel {
-    val dateTime = runCatching { LocalDateTime.parse(publishedAt) }.getOrDefault(LocalDateTime.now())
-//    val dateTime = runCatching { Instant.parse(publishedAt).atZone(ZoneId.systemDefault()) }
-//        .getOrElse {
-//            runCatching {
-//                ZonedDateTime.parse(publishedAt)
-//                    .withZoneSameInstant(ZoneId.systemDefault())
-//            }.getOrDefault(ZonedDateTime.now())
-//        }
+    val dateTime = runCatching { Instant.parse(publishedAt).atZone(ZoneId.systemDefault()).toLocalDateTime() }
+        .getOrElse {
+            runCatching {
+                ZonedDateTime.parse(publishedAt)
+                    .withZoneSameInstant(ZoneId.systemDefault())
+                    .toLocalDateTime()
+            }.getOrNull()
+        }
     return EventUiModel(
         id = id,
-        publishedAt = dateTime,
-        published = dateTime.format(displayFormatter),
+        publishedAt = dateTime ?: LocalDateTime.MIN,
+        published = dateTime?.format(displayFormatter).orEmpty(),
         status = status,
         visit = visit,
         content = content,

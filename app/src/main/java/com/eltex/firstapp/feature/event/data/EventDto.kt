@@ -20,7 +20,7 @@ data class EventDto(
     val participatedByMe: Boolean = false,
     val link: String? = null,
 ) {
-    fun toDomain() = Event(
+    fun toEvent() = Event(
         id = id,
         publishedAt = datetime,
         published = published,

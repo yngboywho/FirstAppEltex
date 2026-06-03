@@ -1,14 +1,10 @@
 package com.eltex.firstapp.feature.event.domain
 
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
-
 interface EventsRepository {
-    fun getEvents(): Single<List<Event>>
-    fun save(content: String, author: String, status: String = "", visit: String = "",
-             link: String = ""): Single<Event>
-    fun update(id: Long, content: String): Single<Event>
-    fun likeById(id: Long, likedByMe: Boolean): Single<Event>
-    fun participateById(id: Long, participatedByMe: Boolean): Single<Event>
-    fun deleteById(id: Long): Completable
+    suspend fun getEvents(): List<Event> = emptyList()
+    suspend fun save(content: String): Event
+    suspend fun update(id: Long, content: String): Event
+    suspend fun likeById(id: Long, likedByMe: Boolean): Event = throw RuntimeException("Not implemented")
+    suspend fun participateById(id: Long, participatedByMe: Boolean): Event = throw RuntimeException("Not implemented")
+    suspend fun deleteById(id: Long) = Unit
 }

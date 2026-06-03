@@ -1,19 +1,19 @@
 package com.eltex.firstapp.feature.util
 
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Scheduler
-import io.reactivex.rxjava3.schedulers.Schedulers
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+
 
 interface AppSchedulers {
-    val io: Scheduler
-    val computation: Scheduler
-    val main: Scheduler
+    val io: CoroutineDispatcher
+    val computation: CoroutineDispatcher
+    val main: CoroutineDispatcher
 
     companion object {
         val DEFAULT = object : AppSchedulers {
-            override val io: Scheduler = Schedulers.io()
-            override val computation: Scheduler = Schedulers.computation()
-            override val main: Scheduler = AndroidSchedulers.mainThread()
+            override val io: CoroutineDispatcher = Dispatchers.IO
+            override val computation: CoroutineDispatcher = Dispatchers.Default
+            override val main: CoroutineDispatcher = Dispatchers.Main
         }
     }
 }

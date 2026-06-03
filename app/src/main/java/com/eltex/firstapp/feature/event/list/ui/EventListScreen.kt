@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -35,6 +36,10 @@ fun EventListScreenRoute(
     viewModel: EventListViewModel = viewModel(),
     onEditEvent: (Long) -> Unit = {},
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.accept(EventListMessage.Retry)
+    }
+
     val state = viewModel.state
 
     when (state.status) {
@@ -49,12 +54,12 @@ fun EventListScreenRoute(
         }
 
         is LoadingState.Error -> {
-            ErrorScreen(modifier = modifier, onRetry = {
+            ErrorScreen(onRetry = {
                 viewModel.accept(EventListMessage.Retry)
             })
         }
 
-        LoadingState.Loading -> LoadingScreen(modifier = modifier)
+        LoadingState.Loading -> LoadingScreen()
     }
 }
 
@@ -127,7 +132,7 @@ private fun DateSeparatorItem(label: String) {
     )
 }
 
-private val longDateFormatter = DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.getDefault())
+private val longDateFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy ")
 
 private fun buildListWithSeparators(events: List<EventUiModel>): List<EventListItem> {
     if (events.isEmpty()) return emptyList()
