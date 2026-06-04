@@ -7,14 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eltex.firstapp.feature.domain.LoadingState
 import com.eltex.firstapp.feature.event.domain.EventsRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
-import java.util.Locale
 
 class EventListViewModel(
     private val repository: EventsRepository,
@@ -97,12 +90,9 @@ class EventListViewModel(
         viewModelScope.launch {
             try {
                 val events = repository.getEvents()
-                val uiModels = withContext(Dispatchers.Default) {
-                    events.map { event -> event.toUiModel() }
-                }
 
                 state = state.copy(
-                    events = uiModels,
+                    events = events.map { it.toUiModel() },
                     status = LoadingState.Idle
                 )
             } catch (error: Exception) {

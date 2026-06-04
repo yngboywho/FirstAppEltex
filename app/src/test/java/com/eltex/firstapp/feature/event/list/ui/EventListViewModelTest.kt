@@ -3,12 +3,35 @@ package com.eltex.firstapp.feature.event.list.ui
 import com.eltex.firstapp.feature.domain.LoadingState
 import com.eltex.firstapp.feature.event.domain.Event
 import com.eltex.firstapp.feature.event.domain.EventsRepository
-import io.reactivex.rxjava3.core.Completable
-import io.reactivex.rxjava3.core.Single
-import org.junit.Assert.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
+import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class EventListViewModelTest {
+
+    private val testDispatcher = UnconfinedTestDispatcher()
+
+    @Before
+    fun setup() {
+        Dispatchers.setMain(testDispatcher)
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
+    }
+
     private val event1 = Event(
         id = 1L,
         publishedAt = "2026-06-03T10:00",
@@ -32,12 +55,12 @@ class EventListViewModelTest {
     )
 
     private fun viewModel(repository: EventsRepository) =
-        EventListViewModel(repository, TestSchedulers)
+        EventListViewModel(repository)
 
     @Test
-    fun `loadEvents success - events loaded, status is Idle`() {
+    fun `loadEvents success - events loaded, status is Idle`() = runTest {
         val repository = FakeEventsRepository(
-            getEventsResult = Single.just(listOf(event1, event2))
+            getEventsResult = listOf(event1, event2)
         )
 
         val vm = viewModel(repository)
@@ -50,7 +73,7 @@ class EventListViewModelTest {
     fun `loadEvents error - status is Error with cause`() {
         val error = RuntimeException("Network error")
         val repository = FakeEventsRepository(
-            getEventsResult = Single.error(error)
+            getEventsError = error
         )
 
         val vm = viewModel(repository)
@@ -64,8 +87,8 @@ class EventListViewModelTest {
     fun `retry on error - reloads events successfully`() {
         val error = RuntimeException("fail")
         val repository = FakeEventsRepository(
-            getEventsResult = Single.error(error),
-            getEventsAfterRetry = Single.just(listOf(event1)),
+            getEventsError = error,
+            getEventsAfterRetry = listOf(event1),
         )
 
         val vm = viewModel(repository)
@@ -81,7 +104,7 @@ class EventListViewModelTest {
     fun `retry error - status remains Error`() {
         val error = RuntimeException("fail")
         val repository = FakeEventsRepository(
-            getEventsResult = Single.error(error),
+            getEventsError = error,
         )
 
         val vm = viewModel(repository)
@@ -94,8 +117,8 @@ class EventListViewModelTest {
     fun `like success - event replaced in list`() {
         val likedEvent = event1.copy(likedByMe = true, likes = 1)
         val repository = FakeEventsRepository(
-            getEventsResult = Single.just(listOf(event1, event2)),
-            likeByIdResult = Single.just(likedEvent),
+            getEventsResult = listOf(event1, event2),
+            likeByIdResult = likedEvent,
         )
 
         val vm = viewModel(repository)
@@ -108,8 +131,8 @@ class EventListViewModelTest {
     @Test
     fun `like error - state unchanged`() {
         val repository = FakeEventsRepository(
-            getEventsResult = Single.just(listOf(event1)),
-            likeByIdResult = Single.error(RuntimeException("error")),
+            getEventsResult = listOf(event1),
+            likeByIdError = RuntimeException("error"),
         )
 
         val vm = viewModel(repository)
@@ -124,8 +147,8 @@ class EventListViewModelTest {
     fun `participate success - event replaced in list`() {
         val participatedEvent = event1.copy(participantsByMe = true, participants = 1)
         val repository = FakeEventsRepository(
-            getEventsResult = Single.just(listOf(event1, event2)),
-            participateByIdResult = Single.just(participatedEvent),
+            getEventsResult = listOf(event1, event2),
+            participateByIdResult = participatedEvent,
         )
 
         val vm = viewModel(repository)
@@ -138,8 +161,8 @@ class EventListViewModelTest {
     @Test
     fun `participate error - state unchanged`() {
         val repository = FakeEventsRepository(
-            getEventsResult = Single.just(listOf(event1)),
-            participateByIdResult = Single.error(RuntimeException("error")),
+            getEventsResult = listOf(event1),
+            participateByIdError = RuntimeException("error"),
         )
 
         val vm = viewModel(repository)
@@ -154,8 +177,8 @@ class EventListViewModelTest {
     fun `saveEdited success - event replaced in list`() {
         val updatedEvent = event1.copy(content = "Updated content")
         val repository = FakeEventsRepository(
-            getEventsResult = Single.just(listOf(event1)),
-            updateResult = Single.just(updatedEvent),
+            getEventsResult = listOf(event1),
+            updateResult = updatedEvent,
         )
 
         val vm = viewModel(repository)
@@ -167,8 +190,8 @@ class EventListViewModelTest {
     @Test
     fun `saveEdited error - state unchanged`() {
         val repository = FakeEventsRepository(
-            getEventsResult = Single.just(listOf(event1)),
-            updateResult = Single.error(RuntimeException("error")),
+            getEventsResult = listOf(event1),
+            updateError = RuntimeException("error"),
         )
 
         val vm = viewModel(repository)
@@ -181,24 +204,23 @@ class EventListViewModelTest {
 
     @Test
     fun `addPost success - event prepended to list`() {
-        val newEvent = event2
         val repository = FakeEventsRepository(
-            getEventsResult = Single.just(listOf(event1)),
-            saveResult = Single.just(newEvent),
+            getEventsResult = listOf(event1),
+            saveResult = event2,
         )
 
         val vm = viewModel(repository)
-        vm.accept(EventListMessage.AddPost(content = newEvent.content))
+        vm.accept(EventListMessage.AddPost(content = event2.content))
 
-        assertEquals(newEvent.toUiModel(), vm.state.events.first())
+        assertEquals(event2.toUiModel(), vm.state.events.first())
         assertEquals(2, vm.state.events.size)
     }
 
     @Test
     fun `addPost error - state unchanged`() {
         val repository = FakeEventsRepository(
-            getEventsResult = Single.just(listOf(event1)),
-            saveResult = Single.error(RuntimeException("error")),
+            getEventsResult = listOf(event1),
+            deleteByIdError = RuntimeException("error"),
         )
 
         val vm = viewModel(repository)
@@ -212,8 +234,7 @@ class EventListViewModelTest {
     @Test
     fun `delete success - event removed from list`() {
         val repository = FakeEventsRepository(
-            getEventsResult = Single.just(listOf(event1, event2)),
-            deleteByIdResult = Completable.complete(),
+            getEventsResult = listOf(event1, event2),
         )
 
         val vm = viewModel(repository)
@@ -226,8 +247,8 @@ class EventListViewModelTest {
     @Test
     fun `delete error - state unchanged`() {
         val repository = FakeEventsRepository(
-            getEventsResult = Single.just(listOf(event1, event2)),
-            deleteByIdResult = Completable.error(RuntimeException("error")),
+            getEventsResult = listOf(event1, event2),
+            deleteByIdError = RuntimeException("error"),
         )
 
         val vm = viewModel(repository)
@@ -241,7 +262,7 @@ class EventListViewModelTest {
     @Test
     fun `findById returns event when found`() {
         val repository = FakeEventsRepository(
-            getEventsResult = Single.just(listOf(event1, event2))
+            getEventsResult = listOf(event1, event2)
         )
 
         val vm = viewModel(repository)
@@ -252,7 +273,7 @@ class EventListViewModelTest {
     @Test
     fun `findById returns null when not found`() {
         val repository = FakeEventsRepository(
-            getEventsResult = Single.just(listOf(event1))
+            getEventsResult = listOf(event1)
         )
 
         val vm = viewModel(repository)
@@ -261,34 +282,51 @@ class EventListViewModelTest {
     }
 
     private class FakeEventsRepository(
-        private val getEventsResult: Single<List<Event>> = Single.never(),
-        private val getEventsAfterRetry: Single<List<Event>>? = null,
-        private val likeByIdResult: Single<Event> = Single.never(),
-        private val participateByIdResult: Single<Event> = Single.never(),
-        private val updateResult: Single<Event> = Single.never(),
-        private val saveResult: Single<Event> = Single.never(),
-        private val deleteByIdResult: Completable = Completable.never(),
+        private val getEventsResult: List<Event> = emptyList(),
+        private val getEventsError: Throwable? = null,
+        private val getEventsAfterRetry: List<Event>? = null,
+        private val likeByIdResult: Event? = null,
+        private val likeByIdError: Throwable? = null,
+        private val participateByIdResult: Event? = null,
+        private val participateByIdError: Throwable? = null,
+        private val updateResult: Event? = null,
+        private val updateError: Throwable? = null,
+        private val saveResult: Event? = null,
+        private val saveError: Throwable? = null,
+        private val deleteByIdError: Throwable? = null,
     ) : EventsRepository {
 
         private var getEventsCallCount = 0
 
-        override fun getEvents(): Single<List<Event>> {
+        override suspend fun getEvents(): List<Event> {
             val count = ++getEventsCallCount
-            return if (count > 1 && getEventsAfterRetry != null) getEventsAfterRetry
-            else getEventsResult
+            if (count > 1 && getEventsAfterRetry != null) return getEventsAfterRetry
+            getEventsError?.let { throw it }
+            return getEventsResult
         }
 
-        override fun save(
-            content: String, author: String, status: String, visit: String, link: String,
-        ): Single<Event> = saveResult
+        override suspend fun save(content: String): Event {
+            saveError?.let { throw it }
+            return saveResult!!
+        }
 
-        override fun update(id: Long, content: String): Single<Event> = updateResult
+        override suspend fun update(id: Long, content: String): Event {
+            updateError?.let { throw it }
+            return updateResult!!
+        }
 
-        override fun likeById(id: Long, likedByMe: Boolean): Single<Event> = likeByIdResult
+        override suspend fun likeById(id: Long, likedByMe: Boolean): Event {
+            likeByIdError?.let { throw it }
+            return likeByIdResult!!
+        }
 
-        override fun participateById(id: Long, participatedByMe: Boolean): Single<Event> =
-            participateByIdResult
+        override suspend fun participateById(id: Long, participatedByMe: Boolean): Event {
+            participateByIdError?.let { throw it }
+            return participateByIdResult!!
+        }
 
-        override fun deleteById(id: Long): Completable = deleteByIdResult
+        override suspend fun deleteById(id: Long) {
+            deleteByIdError?.let { throw it }
+        }
     }
 }
