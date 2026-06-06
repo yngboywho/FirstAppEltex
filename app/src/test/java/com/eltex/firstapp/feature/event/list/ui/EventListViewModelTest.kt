@@ -210,7 +210,7 @@ class EventListViewModelTest {
         )
 
         val vm = viewModel(repository)
-        vm.accept(EventListMessage.AddPost(content = event2.content))
+        vm.accept(EventListMessage.AddEvent(content = event2.content))
 
         assertEquals(event2.toUiModel(), vm.state.events.first())
         assertEquals(2, vm.state.events.size)
@@ -226,7 +226,7 @@ class EventListViewModelTest {
         val vm = viewModel(repository)
         val stateBefore = vm.state
 
-        vm.accept(EventListMessage.AddPost(content = "New event"))
+        vm.accept(EventListMessage.AddEvent(content = "New event"))
 
         assertEquals(stateBefore, vm.state)
     }

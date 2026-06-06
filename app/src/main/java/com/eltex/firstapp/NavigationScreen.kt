@@ -55,7 +55,7 @@ fun NavigationScreen() {
         composable<Navigation.NewEvent> {
             AddPostScreenRoute(
                 onDone = { text ->
-                    eventListViewModel.accept(EventListMessage.AddPost(text))
+                    eventListViewModel.accept(EventListMessage.AddEvent(text))
                     navController.popBackStack()
                 },
             )

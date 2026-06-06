@@ -1,42 +1,55 @@
 package com.eltex.firstapp.feature.event.data
 
+import com.eltex.firstapp.feature.data.HttpClientFactory
+import com.eltex.firstapp.feature.event.data.EventApi.deleteEvent
+import com.eltex.firstapp.feature.event.data.EventApi.getAllEvents
+import com.eltex.firstapp.feature.event.data.EventApi.like
+import com.eltex.firstapp.feature.event.data.EventApi.participate
+import com.eltex.firstapp.feature.event.data.EventApi.saveEvent
+import com.eltex.firstapp.feature.event.data.EventApi.unlike
+import com.eltex.firstapp.feature.event.data.EventApi.unparticipate
+import com.eltex.firstapp.feature.event.data.EventApi.updateEvent
 import com.eltex.firstapp.feature.event.domain.Event
 import com.eltex.firstapp.feature.event.domain.EventsRepository
+import io.ktor.client.HttpClient
 
-class EventsRepositoryImpl : EventsRepository {
+class EventsRepositoryImpl(
+    private val client: HttpClient = HttpClientFactory.client,
+) : EventsRepository {
 
-    override suspend fun getEvents(): List<Event> = EventApi.value.getEvents()
+    override suspend fun getEvents(): List<Event> = client.getAllEvents()
         .map { it.toEvent() }
 
     override suspend fun save(content: String): Event =
-        EventApi.value.saveEvent(EventDto(content = content)).toEvent()
+        client.saveEvent(EventDto(content = content)).toEvent()
 
 
     override suspend fun update(
         id: Long,
         content: String,
     ): Event =
-        EventApi.value.updateEvent(id, EventDto(content = content)).toEvent()
+        client.updateEvent(id, EventDto(content = content)).toEvent()
 
 
     override suspend fun likeById(
         id: Long,
         likedByMe: Boolean,
     ): Event = if (likedByMe) {
-        EventApi.value.unlike(id)
+        client.unlike(id)
     } else {
-        EventApi.value.like(id)
+        client.like(id)
     }.toEvent()
 
     override suspend fun participateById(
         id: Long,
         participatedByMe: Boolean,
     ): Event = if (participatedByMe) {
-        EventApi.value.unparticipate(id)
+        client.unparticipate(id)
     } else {
-        EventApi.value.participate(id)
+        client.participate(id)
     }.toEvent()
 
-    override suspend fun deleteById(id: Long) = EventApi.value.delete(id)
-
+    override suspend fun deleteById(id: Long) {
+        client.deleteEvent(id)
+    }
 }

@@ -27,5 +27,7 @@
     <string name="menu_edit">Редактирование</string>
     <string name="no_account_register">Нет аккаунта? Зарегистрируйтесь</string>
     <string name="network_error">Ошибка сети</string>
+    <string name="forbidden_error">Ошибка доступа</string>
+    <string name="unknown_error">Неизвестная ошибка</string>
     <string name="retry">Перезагрузить</string>
 </resources>

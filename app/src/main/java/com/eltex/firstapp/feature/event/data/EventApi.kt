@@ -1,41 +1,38 @@
 package com.eltex.firstapp.feature.event.data
 
-import com.eltex.firstapp.feature.data.RetrofitFactory
-import retrofit2.create
-import retrofit2.http.Body
-import retrofit2.http.DELETE
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.delete
+import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 
-interface EventApi {
-    @GET("events")
-    suspend fun getEvents(): List<EventDto>
+object EventApi {
 
-    @POST("events")
-    suspend fun saveEvent(@Body eventDto: EventDto): EventDto
+    suspend fun HttpClient.getAllEvents(): List<EventDto> = get("events").body()
 
-    @POST("events/{id}")
-    suspend fun updateEvent(@Path("id") id: Long, @Body eventDto: EventDto): EventDto
 
-    @POST("events/{id}/likes")
-    suspend fun like(@Path("id") id: Long): EventDto
+    suspend fun HttpClient.saveEvent(eventDto: EventDto): EventDto = post("events") {
+        setBody(eventDto)
+    }.body()
 
-    @DELETE("events/{id}/likes")
-    suspend fun unlike(@Path("id") id: Long): EventDto
 
-    @POST("events/{id}/participate")
-    suspend fun participate(@Path("id") id: Long): EventDto
+    suspend fun HttpClient.updateEvent(id: Long, eventDto: EventDto): EventDto = post("events/$id") {
+        setBody(eventDto)
+    }.body()
 
-    @DELETE("events{id}/participate")
-    suspend fun unparticipate(@Path("id") id: Long): EventDto
 
-    @DELETE("events/{id}")
-    suspend fun delete(@Path("id") id: Long)
+    suspend fun HttpClient.like(id: Long): EventDto = post("events/$id/likes").body()
 
-    companion object {
-        val value: EventApi by lazy {
-            RetrofitFactory.retrofit.create()
-        }
-    }
+
+    suspend fun HttpClient.unlike(id: Long): EventDto = post("events/$id/likes").body()
+
+
+    suspend fun HttpClient.participate(id: Long): EventDto = post("events/$id/participate").body()
+
+
+    suspend fun HttpClient.unparticipate(id: Long): EventDto = post("events/$id/participate").body()
+
+
+    suspend fun HttpClient.deleteEvent(id: Long): EventDto = delete("events/$id").body()
 }

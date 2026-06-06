@@ -75,7 +75,10 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(platform(libs.okhttp.bom))
     implementation(libs.logging.interceptor)
-    implementation(libs.converter.kotlinx.serialization)
+    implementation(platform(libs.ktor.bom))
+    implementation(libs.ktor.client.content.negotiation)
+    implementation(libs.ktor.client.okhttp)
+    implementation(libs.ktor.serialization.json)
 
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

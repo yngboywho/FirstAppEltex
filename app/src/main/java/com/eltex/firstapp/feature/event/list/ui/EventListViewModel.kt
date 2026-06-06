@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eltex.firstapp.feature.domain.LoadingState
 import com.eltex.firstapp.feature.event.domain.EventsRepository
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 class EventListViewModel(
@@ -14,6 +16,9 @@ class EventListViewModel(
 ) : ViewModel() {
     var state by mutableStateOf(EventListState())
         private set
+
+    private val _effects = MutableSharedFlow<EventListEffect>(extraBufferCapacity = 1)
+    val effects = _effects.asSharedFlow()
 
     init {
         loadEvents()
@@ -57,7 +62,7 @@ class EventListViewModel(
                     }
             }
 
-            is EventListMessage.AddPost -> viewModelScope.launch {
+            is EventListMessage.AddEvent -> viewModelScope.launch {
                 runCatching {
                     repository.save(
                         content = message.content
@@ -68,6 +73,7 @@ class EventListViewModel(
                             add(event.toUiModel())
                             addAll(state.events)
                         })
+                        _effects.tryEmit(EventListEffect.ScrollTo(0))
                     }
             }
 

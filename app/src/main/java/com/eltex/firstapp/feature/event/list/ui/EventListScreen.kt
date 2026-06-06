@@ -1,5 +1,8 @@
 package com.eltex.firstapp.feature.event.list.ui
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
@@ -8,36 +11,57 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.eltex.firstapp.R
+import com.eltex.firstapp.feature.domain.AppException
 import com.eltex.firstapp.feature.domain.LoadingState
 import com.eltex.firstapp.ui.ErrorScreen
 import com.eltex.firstapp.ui.LoadingScreen
 import com.eltex.firstapp.ui.theme.FirstAppTheme
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 
 @Composable
 fun EventListScreenRoute(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues.Zero,
     viewModel: EventListViewModel = viewModel(),
+    listState: LazyListState = rememberLazyListState(),
     onEditEvent: (Long) -> Unit = {},
 ) {
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
-        viewModel.accept(EventListMessage.Retry)
+        viewModel.effects.collect { effect ->
+            when (effect) {
+                is EventListEffect.ScrollTo -> {
+                    listState.animateScrollToItem(effect.index)
+                }
+
+                is EventListEffect.Error -> {
+                    Toast.makeText(
+                        context,
+                        @SuppressLint("LocalContextGetResourceValueCall")
+                        effect.value.toReadableFormat(context),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
     }
 
     val state = viewModel.state
@@ -183,4 +207,10 @@ private fun EventListScreenPreview() {
             )
         )
     }
+}
+
+fun Throwable.toReadableFormat(context: Context): String = when (this) {
+    is AppException.NetworkException -> context.getString(R.string.network_error)
+    is AppException.Forbidden -> context.getString(R.string.forbidden_error)
+    else -> context.getString(R.string.unknown_error)
 }
