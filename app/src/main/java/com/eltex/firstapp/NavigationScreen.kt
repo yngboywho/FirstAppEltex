@@ -24,29 +24,15 @@ import kotlinx.serialization.Serializable
 @Composable
 fun NavigationScreen() {
     val navController = rememberNavController()
-    val context = LocalContext.current
-
-    val postListViewModel: PostListViewModel = viewModel {
-        PostListViewModel(
-            repository = LocalPostsRepository(context.applicationContext)
-        )
-    }
-
-    val eventListViewModel: EventListViewModel = viewModel {
-        EventListViewModel(
-            repository = EventsRepositoryImpl()
-        )
-    }
 
     NavHost(navController = navController, startDestination = Navigation.Main) {
         composable<Navigation.Main> {
-            MainScreen(navController, postListViewModel, eventListViewModel)
+            MainScreen(navController)
         }
 
         composable<Navigation.NewPost> {
             AddPostScreenRoute(
                 onDone = { text ->
-                    postListViewModel.accept(PostListMessage.AddPost(text))
                     navController.popBackStack()
                 },
             )
@@ -55,7 +41,6 @@ fun NavigationScreen() {
         composable<Navigation.NewEvent> {
             AddPostScreenRoute(
                 onDone = { text ->
-                    eventListViewModel.accept(EventListMessage.AddEvent(text))
                     navController.popBackStack()
                 },
             )
@@ -65,7 +50,6 @@ fun NavigationScreen() {
             val route = backStackEntry.toRoute<Navigation.EditPost>()
             EditPostScreenRoute(
                 postId = route.id,
-                listViewModel = postListViewModel,
                 onDone = { navController.popBackStack() },
             )
         }

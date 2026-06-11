@@ -16,8 +16,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -28,8 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.eltex.firstapp.R
-import com.eltex.firstapp.feature.domain.AppException
-import com.eltex.firstapp.feature.domain.LoadingState
+import com.eltex.firstapp.domain.AppException
+import com.eltex.firstapp.domain.LoadingState
 import com.eltex.firstapp.ui.ErrorScreen
 import com.eltex.firstapp.ui.LoadingScreen
 import com.eltex.firstapp.ui.theme.FirstAppTheme
@@ -64,7 +67,7 @@ fun EventListScreenRoute(
         }
     }
 
-    val state = viewModel.state
+    val state by viewModel.state.collectAsState()
 
     when (state.status) {
         LoadingState.Idle -> {
@@ -79,7 +82,7 @@ fun EventListScreenRoute(
 
         is LoadingState.Error -> {
             ErrorScreen(onRetry = {
-                viewModel.accept(EventListMessage.Retry)
+                viewModel.accept(EventListMessage.LoadInitial)
             })
         }
 
@@ -91,10 +94,19 @@ fun EventListScreenRoute(
 fun EventListScreen(
     state: EventListState,
     modifier: Modifier = Modifier,
+    isRefreshing: Boolean = false,
     contentPadding: PaddingValues = PaddingValues.Zero,
     onMessage: (EventListMessage) -> Unit = {},
     onEditEvent: (Long) -> Unit = {},
 ) {
+    PullToRefreshBox(
+        isRefreshing = isRefreshing,
+        onRefresh = {
+            onMessage(EventListMessage.LoadInitial)
+        }
+    ) {
+
+    }
     val layoutDirection = LocalLayoutDirection.current
 
     val combinedPadding = PaddingValues(

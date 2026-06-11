@@ -1,6 +1,6 @@
 package com.eltex.firstapp.feature.data
 
-import com.eltex.firstapp.feature.domain.AppException
+import com.eltex.firstapp.domain.AppException
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.HttpResponseValidator

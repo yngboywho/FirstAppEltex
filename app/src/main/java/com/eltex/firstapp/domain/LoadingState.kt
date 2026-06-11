@@ -1,4 +1,4 @@
-package com.eltex.firstapp.feature.domain
+package com.eltex.firstapp.domain
 
 sealed interface LoadingState {
     data object Idle : LoadingState

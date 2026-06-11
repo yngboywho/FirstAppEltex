@@ -1,4 +1,4 @@
-package com.eltex.firstapp.feature.domain
+package com.eltex.firstapp.domain
 
 sealed class AppException: Exception() {
     class Forbidden : AppException()

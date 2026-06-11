@@ -1,6 +1,6 @@
 package com.eltex.firstapp.feature.event.list.ui
 
-import com.eltex.firstapp.feature.domain.LoadingState
+import com.eltex.firstapp.domain.LoadingState
 import com.eltex.firstapp.feature.event.domain.Event
 import com.eltex.firstapp.feature.event.domain.EventsRepository
 import kotlinx.coroutines.Dispatchers
@@ -94,7 +94,7 @@ class EventListViewModelTest {
         val vm = viewModel(repository)
         assertTrue(vm.state.status is LoadingState.Error)
 
-        vm.accept(EventListMessage.Retry)
+        vm.accept(EventListMessage.Refresh)
 
         assertEquals(listOf(event1.toUiModel()), vm.state.events)
         assertEquals(LoadingState.Idle, vm.state.status)
@@ -108,7 +108,7 @@ class EventListViewModelTest {
         )
 
         val vm = viewModel(repository)
-        vm.accept(EventListMessage.Retry)
+        vm.accept(EventListMessage.Refresh)
 
         assertTrue(vm.state.status is LoadingState.Error)
     }

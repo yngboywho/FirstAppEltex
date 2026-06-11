@@ -2,7 +2,8 @@ package com.eltex.firstapp.feature.event.data
 
 import com.eltex.firstapp.feature.data.HttpClientFactory
 import com.eltex.firstapp.feature.event.data.EventApi.deleteEvent
-import com.eltex.firstapp.feature.event.data.EventApi.getAllEvents
+import com.eltex.firstapp.feature.event.data.EventApi.getEventsBefore
+import com.eltex.firstapp.feature.event.data.EventApi.getLatestEvents
 import com.eltex.firstapp.feature.event.data.EventApi.like
 import com.eltex.firstapp.feature.event.data.EventApi.participate
 import com.eltex.firstapp.feature.event.data.EventApi.saveEvent
@@ -16,9 +17,15 @@ import io.ktor.client.HttpClient
 class EventsRepositoryImpl(
     private val client: HttpClient = HttpClientFactory.client,
 ) : EventsRepository {
-
-    override suspend fun getEvents(): List<Event> = client.getAllEvents()
+    override suspend fun getEventsLatest(size: Int): List<Event> = client.getLatestEvents(size)
         .map { it.toEvent() }
+
+    override suspend fun getEventsBefore(
+        eventId: Long,
+        size: Int
+    ): List<Event> = client.getEventsBefore(eventId, size)
+        .map { it.toEvent() }
+
 
     override suspend fun save(content: String): Event =
         client.saveEvent(EventDto(content = content)).toEvent()

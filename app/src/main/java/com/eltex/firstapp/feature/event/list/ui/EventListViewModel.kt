@@ -1,114 +1,36 @@
 package com.eltex.firstapp.feature.event.list.ui
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.eltex.firstapp.feature.domain.LoadingState
-import com.eltex.firstapp.feature.event.domain.EventsRepository
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import com.eltex.firstapp.feature.tea.Store
 import kotlinx.coroutines.launch
 
 class EventListViewModel(
-    private val repository: EventsRepository,
+    reducer: EventListReducer = EventListReducer(),
+    effectHandler: EventListEffectHandler = EventListEffectHandler(),
 ) : ViewModel() {
-    var state by mutableStateOf(EventListState())
-        private set
 
-    private val _effects = MutableSharedFlow<EventListEffect>(extraBufferCapacity = 1)
-    val effects = _effects.asSharedFlow()
+    private val store = Store(
+        reducer,
+        effectHandler,
+        EventListState(),
+        setOf(EventListMessage.LoadInitial),
+    )
+
+    var state = store.state
+    val effects = store.effects
 
     init {
-        loadEvents()
-    }
-
-    fun accept(message: EventListMessage) {
-        when (message) {
-            is EventListMessage.Like -> viewModelScope.launch {
-                runCatching {
-                    repository.likeById(
-                        message.id,
-                        message.likedByMe,
-                    )
-                }
-                    .onSuccess {
-                        state = state.copy(events = state.events.replaceById(it.toUiModel()))
-                    }
-            }
-
-            is EventListMessage.Participate -> viewModelScope.launch {
-                runCatching {
-                    repository.participateById(
-                        message.id,
-                        message.participatedByMe,
-                    )
-                }
-                    .onSuccess {
-                        state = state.copy(events = state.events.replaceById(it.toUiModel()))
-                    }
-            }
-
-            is EventListMessage.SaveEdited -> viewModelScope.launch {
-                runCatching {
-                    repository.update(
-                        message.id,
-                        message.content
-                    )
-                }
-                    .onSuccess {
-                        state = state.copy(events = state.events.replaceById(it.toUiModel()))
-                    }
-            }
-
-            is EventListMessage.AddEvent -> viewModelScope.launch {
-                runCatching {
-                    repository.save(
-                        content = message.content
-                    )
-                }
-                    .onSuccess { event ->
-                        state = state.copy(events = buildList {
-                            add(event.toUiModel())
-                            addAll(state.events)
-                        })
-                        _effects.tryEmit(EventListEffect.ScrollTo(0))
-                    }
-            }
-
-            is EventListMessage.Delete -> viewModelScope.launch {
-                runCatching {
-                    repository.deleteById(message.id)
-                }
-                    .onSuccess {
-                        state = state.copy(events = state.events.filter { it.id != message.id })
-                    }
-            }
-
-            is EventListMessage.Retry -> loadEvents()
+        viewModelScope.launch {
+            store.connect()
         }
     }
 
-    private fun loadEvents() {
-        state = state.copy(status = LoadingState.Loading)
-
+    fun accept(message: EventListMessage) {
         viewModelScope.launch {
-            try {
-                val events = repository.getEvents()
-
-                state = state.copy(
-                    events = events.map { it.toUiModel() },
-                    status = LoadingState.Idle
-                )
-            } catch (error: Exception) {
-                state = state.copy(status = LoadingState.Error(error))
-            }
+            store.accept(message)
         }
     }
 
     fun findById(id: Long): EventUiModel? = state.events.find { it.id == id }
-
-    private fun List<EventUiModel>.replaceById(updated: EventUiModel) =
-        map { if (it.id == updated.id) updated else it }
 }
