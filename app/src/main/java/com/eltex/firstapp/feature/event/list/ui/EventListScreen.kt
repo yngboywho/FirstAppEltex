@@ -71,24 +71,27 @@ fun EventListScreenRoute(
 
     val state by viewModel.state.collectAsState()
 
-    when (state.status) {
-        LoadingState.Idle -> {
-            EventListScreen(
-                state = state,
-                modifier = modifier,
-                contentPadding = contentPadding,
-                onMessage = viewModel::accept,
-                onEditEvent = onEditEvent,
-            )
-        }
-
-        is LoadingState.Error -> {
+    when {
+        state.isEmptyError -> {
             ErrorScreen(onRetry = {
                 viewModel.accept(EventListMessage.LoadInitial)
             })
         }
 
-        LoadingState.Loading -> LoadingScreen()
+        state.isEmptyLoading -> LoadingScreen()
+
+        else -> {
+            EventListScreen(
+                state = state,
+                modifier = modifier,
+                contentPadding = contentPadding,
+                eventListHandler = viewModel::accept,
+                onEditEvent = onEditEvent,
+                onScrollToEnd = {
+                    viewModel.accept(EventListMessage.LoadNextPage)
+                }
+            )
+        }
     }
 }
 
@@ -98,13 +101,14 @@ fun EventListScreen(
     modifier: Modifier = Modifier,
     isRefreshing: Boolean = false,
     contentPadding: PaddingValues = PaddingValues.Zero,
-    onMessage: (EventListMessage) -> Unit = {},
+    eventListHandler: (EventListMessage) -> Unit = {},
     onEditEvent: (Long) -> Unit = {},
+    onScrollToEnd: () -> Unit = {},
 ) {
     PullToRefreshBox(
         isRefreshing = isRefreshing,
         onRefresh = {
-            onMessage(EventListMessage.LoadInitial)
+            eventListHandler(EventListMessage.LoadInitial)
         }
     ) {
 
@@ -148,10 +152,16 @@ fun EventListScreen(
                     modifier = Modifier.animateItem(),
                     event = item.event,
                     onEditClicked = { onEditEvent(item.event.id) },
-                    onDeleteClicked = { onMessage(EventListMessage.Delete(item.event.id)) },
-                    likeClicked = { onMessage(EventListMessage.Like(item.event.id, item.event.likedByMe)) },
-                    participateClicked = { onMessage(EventListMessage.Participate(item.event.id, item.event.participantsByMe)) },
+                    onDeleteClicked = { eventListHandler(EventListMessage.Delete(item.event.id)) },
+                    likeClicked = { eventListHandler(EventListMessage.Like(item.event.id, item.event.likedByMe)) },
+                    participateClicked = { eventListHandler(EventListMessage.Participate(item.event.id, item.event.participantsByMe)) },
                 )
+            }
+        }
+
+        item {
+            LaunchedEffect(Unit) {
+                onScrollToEnd()
             }
         }
     }
