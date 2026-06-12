@@ -63,6 +63,8 @@ fun EventListScreenRoute(
                         Toast.LENGTH_SHORT
                     ).show()
                 }
+
+                else -> Unit
             }
         }
     }
@@ -72,7 +74,7 @@ fun EventListScreenRoute(
     when (state.status) {
         LoadingState.Idle -> {
             EventListScreen(
-                state = viewModel.state,
+                state = state,
                 modifier = modifier,
                 contentPadding = contentPadding,
                 onMessage = viewModel::accept,
@@ -117,7 +119,7 @@ fun EventListScreen(
     )
 
     val listItems = remember(state.events) {
-        buildListWithSeparators(state.events)
+        buildListWithSeparators(state.events.orEmpty())
     }
 
     LazyColumn(

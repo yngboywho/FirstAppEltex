@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.merge
 
 class EventListEffectHandler(
     private val repository: EventsRepository = EventsRepositoryImpl(),
