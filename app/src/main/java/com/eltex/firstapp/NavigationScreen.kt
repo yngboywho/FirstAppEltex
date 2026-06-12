@@ -8,15 +8,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.eltex.firstapp.feature.auth.ui.AuthScreenRoute
-import com.eltex.firstapp.feature.event.data.EventsRepositoryImpl
-import com.eltex.firstapp.feature.event.list.ui.EventListMessage
-import com.eltex.firstapp.feature.event.list.ui.EventListViewModel
 import com.eltex.firstapp.feature.main.MainScreen
 import com.eltex.firstapp.feature.post.add.AddPostScreenRoute
 import com.eltex.firstapp.feature.post.data.LocalPostsRepository
 import com.eltex.firstapp.feature.post.edit.EditEventScreenRoute
 import com.eltex.firstapp.feature.post.edit.EditPostScreenRoute
-import com.eltex.firstapp.feature.post.ui.PostListMessage
 import com.eltex.firstapp.feature.post.ui.PostListViewModel
 import com.eltex.firstapp.feature.registration.ui.RegistrationScreenRoute
 import kotlinx.serialization.Serializable
@@ -27,7 +23,11 @@ fun NavigationScreen() {
 
     NavHost(navController = navController, startDestination = Navigation.Main) {
         composable<Navigation.Main> {
-            MainScreen(navController)
+            MainScreen(
+                navController = navController,
+                postListViewModel = postListViewModel(),
+                eventListViewModel = viewModel(),
+            )
         }
 
         composable<Navigation.NewPost> {
@@ -50,6 +50,7 @@ fun NavigationScreen() {
             val route = backStackEntry.toRoute<Navigation.EditPost>()
             EditPostScreenRoute(
                 postId = route.id,
+                listViewModel = postListViewModel(),
                 onDone = { navController.popBackStack() },
             )
         }
@@ -58,7 +59,7 @@ fun NavigationScreen() {
             val route = backStackEntry.toRoute<Navigation.EditEvent>()
             EditEventScreenRoute(
                 eventId = route.id,
-                listViewModel = eventListViewModel,
+                listViewModel = viewModel(),
                 onDone = { navController.popBackStack() },
             )
         }
@@ -85,6 +86,12 @@ fun NavigationScreen() {
             )
         }
     }
+}
+
+@Composable
+private fun postListViewModel(): PostListViewModel {
+    val context = LocalContext.current.applicationContext
+    return viewModel { PostListViewModel(LocalPostsRepository(context)) }
 }
 
 @Serializable
