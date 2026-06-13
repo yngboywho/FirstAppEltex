@@ -32,5 +32,5 @@ class EventListViewModel(
         }
     }
 
-    fun findById(id: Long): EventUiModel? = TODO()
+    fun findById(id: Long): EventUiModel? = state.value.events?.find { it.id == id }
 }

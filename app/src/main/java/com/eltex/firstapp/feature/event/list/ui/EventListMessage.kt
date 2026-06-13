@@ -17,7 +17,7 @@ sealed interface EventListMessage {
 
     data class Like(val id: Long, val likedByMe: Boolean): EventListMessage
     data class LikeError(
-        val postId: Long,
+        val eventId: Long,
         val originalLikedByMe: Boolean,
         val originalLikes: Int,
         val error: AppException,
@@ -25,8 +25,19 @@ sealed interface EventListMessage {
 
     data class LikeSuccess(val event: Event) : EventListMessage
 
-    data class Participate(val id: Long, val participatedByMe: Boolean): EventListMessage
+    data class Participate(val id: Long, val participatedByMe: Boolean) : EventListMessage
+    data class ParticipateError(
+        val eventId: Long,
+        val originalParticipatedByMe: Boolean,
+        val originalParticipants: Int,
+        val error: AppException,
+    ) : EventListMessage
+
+    data class ParticipateSuccess(val event: Event) : EventListMessage
+
+
     data class SaveEdited(val id: Long, val content: String) : EventListMessage
+    data class SaveEditedResult(val value: Either<AppException, Event>) : EventListMessage
 
     data class AddEvent(val text: String) : EventListMessage
     data class AddEventResult(val value: Either<AppException, Event>): EventListMessage

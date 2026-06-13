@@ -36,10 +36,19 @@ class EventListEffectHandler(
                 }
             )
         },
-        effects.filterIsInstance<EventListEffect.AddPost>().mapLatest { effect ->
+        effects.filterIsInstance<EventListEffect.AddEvent>().mapLatest { effect ->
             EventListMessage.AddEventResult(
                 try {
                     repository.save(effect.content).right()
+                } catch (e: AppException) {
+                    e.left()
+                }
+            )
+        },
+        effects.filterIsInstance<EventListEffect.EditEvent>().mapLatest { effect ->
+            EventListMessage.SaveEditedResult(
+                try {
+                    repository.update(effect.id, effect.content).right()
                 } catch (e: AppException) {
                     e.left()
                 }
@@ -61,6 +70,20 @@ class EventListEffectHandler(
                     effect
                         .data.originalLikes,
                     e,
+                )
+            }
+        },
+        effects.filterIsInstance<EventListEffect.Participate>().mapLatest { effect ->
+            try {
+                EventListMessage.ParticipateSuccess(
+                    repository.participateById(effect.data.id, effect.participatedByMe)
+                )
+            } catch (e: AppException) {
+                EventListMessage.ParticipateError(
+                    eventId = effect.data.id,
+                    originalParticipatedByMe = effect.data.originalParticipatedByMe,
+                    originalParticipants = effect.data.originalParticipants,
+                    error = e,
                 )
             }
         },
